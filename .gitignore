@@ -97,3 +97,6 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+xr-sandbox-app/UserSettings/
+xr-sandbox-app/Temp/
+xr-sandbox-app/Library/
