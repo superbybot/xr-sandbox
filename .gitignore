@@ -100,3 +100,5 @@ InitTestScene*.unity*
 xr-sandbox-app/UserSettings/
 xr-sandbox-app/Temp/
 xr-sandbox-app/Library/
+xr-sandbox-app/.idea/
+xr-sandbox-app/obj/
