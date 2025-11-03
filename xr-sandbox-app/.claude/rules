@@ -28,6 +28,43 @@ This Unity project focuses on the **App folder** with a **demo-based architectur
 - Everything outside `/Assets/App/` (samples, external sources, third-party assets)
 - **Note**: Can reference and learn from external code for patterns and examples, but DO NOT modify anything outside App/
 
+## Reference Directories
+These directories are available for learning patterns, techniques, and implementations. Reference them for examples but DO NOT modify them:
+
+- **C:\Users\Wonderfy149\Documents\unity_kartinggame** - Karting game project for racing mechanics and gameplay patterns
+- **C:\Users\Wonderfy149\Documents\unity_towerdefense** - Tower defense project for strategy game patterns and AI
+- **C:\Users\Wonderfy149\Documents\XR-Interaction-Toolkit-Examples** - XR Interaction Toolkit examples and reference implementations
+
+When working on XR features, prioritize referencing the XR-Interaction-Toolkit-Examples project for best practices and implementation patterns.
+
+## XR Development Standards
+
+### XR Interaction Toolkit Version
+This project uses **Unity XR Interaction Toolkit version 3.2.1**
+
+### XR-Specific Guidelines
+- Follow XR Interaction Toolkit 3.2.1 API and best practices
+- Use the new input system with XR controllers
+- Implement proper XR interaction states (hover, select, activate)
+- Use XR Interactors and Interactables for object manipulation
+- Leverage XR Ray Interactors for distant interactions
+- Use XR Direct Interactors for near-field hand interactions
+- Implement proper locomotion using XR Toolkit's locomotion system
+- Follow XR performance optimization guidelines (maintain 90+ FPS for VR)
+- Test XR interactions in both headset and simulation modes
+- Use XR Interaction Toolkit's affordance system for visual feedback
+- Implement proper hand tracking when available
+- Use XR Rig components for camera and controller management
+- Reference **XR-Interaction-Toolkit-Examples** project for implementation patterns
+
+### XR Performance Considerations
+- Minimize draw calls and overdraw for XR rendering
+- Use single-pass stereo rendering when possible
+- Optimize shaders for mobile XR platforms
+- Implement dynamic resolution scaling for performance
+- Use object pooling extensively for XR scenarios
+- Profile regularly using Unity's XR Performance tools
+
 ## Code Standards
 
 ### C# Conventions (Microsoft Guidelines)
@@ -98,10 +135,12 @@ This Unity project focuses on the **App folder** with a **demo-based architectur
 - Component-based architecture following Unity's design
 - MVVM/MVP patterns with R3 for UI and data binding
 - Service locator pattern through VContainer
+- **XR Interaction patterns** from XR Interaction Toolkit 3.2.1
 
 ## Required Packages
 This project uses the following packages (already installed):
 
+- **XR Interaction Toolkit** - `com.unity.xr.interaction.toolkit` version **3.2.1** - Core XR interactions and locomotion
 - **UniTask** - `com.cysharp.unitask` - Async/await support for Unity
 - **UniRx R3** - `com.cysharp.r3` - Reactive Extensions for Unity  
 - **VContainer** - `jp.hadashikick.vcontainer` - Dependency injection container
@@ -111,6 +150,7 @@ This project uses the following packages (already installed):
 - Use Unity Test Runner for integration tests
 - Test public APIs and edge cases
 - Mock Unity dependencies when testing logic classes
+- Test XR interactions in both editor simulation and device
 
 ## Version Control
 - Ignore /Library/, /Temp/, /Logs/ directories
@@ -120,14 +160,17 @@ This project uses the following packages (already installed):
 
 ## When Working on This Project
 - Always test changes in Play mode
+- Test XR features using XR Device Simulator when headset unavailable
 - Consider performance impact of modifications
 - Follow Unity's component-based design principles
 - Use Unity's built-in events and systems when available
 - Maintain compatibility with Unity's serialization system
+- Follow XR Interaction Toolkit 3.2.1 best practices
 
 ## Claude Code Integration Notes
 - **MODIFY ONLY `/Assets/App/` folder** - never modify files outside App/
 - **Can reference external code**: Use samples and external sources as examples and learning material
+- **Reference projects available**: unity_kartinggame, unity_towerdefense, XR-Interaction-Toolkit-Examples
 - **Demo-based development**: Each demo is self-contained within its own subfolder
 - When creating new scripts for a specific demo, place them in `Assets/App/DemoName/Scripts/`
 - When creating shared functionality, place scripts in `Assets/App/Shared/Scripts/`
@@ -138,3 +181,4 @@ This project uses the following packages (already installed):
 - When referencing assets, prioritize those within the same demo folder or shared folder
 - Each demo should be able to run independently with minimal dependencies on other demos
 - **Learn from external patterns**: Study code patterns, techniques, and implementations from samples/external sources but adapt them within the App folder structure
+- **For XR features**: Always reference XR-Interaction-Toolkit-Examples project and follow XR Interaction Toolkit 3.2.1 patterns
