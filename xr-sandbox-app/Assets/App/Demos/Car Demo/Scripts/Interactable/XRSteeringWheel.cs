@@ -1,8 +1,9 @@
-﻿using Unity.Tutorials.Core.Editor;
+using Unity.Tutorials.Core.Editor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 namespace App.Demos.Car_Demo.Scripts.Interactable
 {
@@ -11,10 +12,54 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
         [Header("Custom Settings")] 
         [SerializeField] private bool _onSelect = true;
         
+        [Header("Return to Origin")]
+        [SerializeField] private bool _returnToOriginalRotation = true;
+        [SerializeField] private float _returnSpeed = 5f;
+
+        [SerializeField] private float _nearInteractionDistanceThreshold = 0.2f;
+        
         [SerializeField] private Transform _wheelTransform;
         public UnityEvent<float> OnWheelRotated;
         
         private float _currentAngle;
+        private Quaternion _originalRotation;
+        private bool _isReturning = false;
+
+        public override bool IsSelectableBy(IXRSelectInteractor interactor)
+        {
+            if (interactor is NearFarInteractor nearFar)
+            {
+                return base.IsSelectableBy(interactor) && 
+                       nearFar.selectionRegion.Value == NearFarInteractor.Region.Near;
+            }
+            
+            return base.IsSelectableBy(interactor) && interactor is not XRRayInteractor;
+        }
+
+        public override bool IsHoverableBy(IXRHoverInteractor interactor)
+        {
+            if (interactor is NearFarInteractor nearFar)
+            {
+                float distance = Vector3.Distance(nearFar.transform.position, this.transform.position);
+
+                if (distance <= _nearInteractionDistanceThreshold)
+                {
+                    return base.IsHoverableBy(interactor);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+    
+            return base.IsHoverableBy(interactor) && interactor is not XRRayInteractor;
+        }
+
+        protected override void Awake()
+        {
+            base.Awake();
+            _originalRotation = _wheelTransform.localRotation;
+        }
 
         protected override void OnSelectEntered(SelectEnterEventArgs args)
         {
@@ -24,6 +69,7 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
                 return;
             }
             _currentAngle = FindWheelAngle();
+            _isReturning = false;
         }
 
         protected override void OnSelectExited(SelectExitEventArgs args)
@@ -34,6 +80,11 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
                 return;
             }
             _currentAngle = FindWheelAngle();
+            
+            if (_returnToOriginalRotation)
+            {
+                _isReturning = true;
+            }
         }
 
         protected override void OnHoverEntered(HoverEnterEventArgs args)
@@ -44,6 +95,7 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
                 return;
             }
             _currentAngle = FindWheelAngle();
+            _isReturning = false;
         }
 
         protected override void OnHoverExited(HoverExitEventArgs args)
@@ -54,6 +106,11 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
                 return;
             }
             _currentAngle = FindWheelAngle();
+            
+            if (_returnToOriginalRotation)
+            {
+                _isReturning = true;
+            }
         }
 
         public override void ProcessInteractable(XRInteractionUpdateOrder.UpdatePhase updatePhase)
@@ -63,12 +120,17 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
             switch (updatePhase)
             {
                 case XRInteractionUpdateOrder.UpdatePhase.Dynamic:
-                    if (IsSelected())
+                {
+                    if (_isReturning && !IsSelected())
+                    {
+                        ReturnToOriginalRotation();
+                    }
+                    else if (IsSelected())
                     {
                         RotateWheel();
                     }
-                    break;
-                
+                }
+                break;
             }
         }
 
@@ -84,8 +146,6 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
             _wheelTransform.Rotate(transform.forward, -angleDifference);
             _currentAngle = totalAngle;
             OnWheelRotated?.Invoke(angleDifference);
-            
-            Debug.Log("forward: " + transform.forward);
         }
 
         private float FindWheelAngle()
@@ -130,6 +190,21 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
             else
             {
                 return 1f / interactorsHovering.Count;
+            }
+        }
+    
+        private void ReturnToOriginalRotation()
+        {
+            _wheelTransform.localRotation = Quaternion.Slerp(
+                _wheelTransform.localRotation,
+                _originalRotation,
+                Time.deltaTime * _returnSpeed
+            );
+            
+            if (Quaternion.Angle(_wheelTransform.localRotation, _originalRotation) < 0.1f)
+            {
+                _wheelTransform.localRotation = _originalRotation;
+                _isReturning = false;
             }
         }
     }

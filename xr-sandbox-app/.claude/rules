@@ -34,8 +34,9 @@ These directories are available for learning patterns, techniques, and implement
 - **C:\Users\Wonderfy149\Documents\unity_kartinggame** - Karting game project for racing mechanics and gameplay patterns
 - **C:\Users\Wonderfy149\Documents\unity_towerdefense** - Tower defense project for strategy game patterns and AI
 - **C:\Users\Wonderfy149\Documents\XR-Interaction-Toolkit-Examples** - XR Interaction Toolkit examples and reference implementations
+- **C:\Users\Wonderfy149\Documents\Unity-NorthStar** - North Star AR/XR headset project for advanced XR implementations and hardware integration patterns
 
-When working on XR features, prioritize referencing the XR-Interaction-Toolkit-Examples project for best practices and implementation patterns.
+When working on XR features, prioritize referencing the XR-Interaction-Toolkit-Examples and Unity-NorthStar projects for best practices and implementation patterns.
 
 ## XR Development Standards
 
@@ -55,7 +56,7 @@ This project uses **Unity XR Interaction Toolkit version 3.2.1**
 - Use XR Interaction Toolkit's affordance system for visual feedback
 - Implement proper hand tracking when available
 - Use XR Rig components for camera and controller management
-- Reference **XR-Interaction-Toolkit-Examples** project for implementation patterns
+- Reference **XR-Interaction-Toolkit-Examples** and **Unity-NorthStar** projects for implementation patterns
 
 ### XR Performance Considerations
 - Minimize draw calls and overdraw for XR rendering
@@ -170,7 +171,7 @@ This project uses the following packages (already installed):
 ## Claude Code Integration Notes
 - **MODIFY ONLY `/Assets/App/` folder** - never modify files outside App/
 - **Can reference external code**: Use samples and external sources as examples and learning material
-- **Reference projects available**: unity_kartinggame, unity_towerdefense, XR-Interaction-Toolkit-Examples
+- **Reference projects available**: unity_kartinggame, unity_towerdefense, XR-Interaction-Toolkit-Examples, Unity-NorthStar
 - **Demo-based development**: Each demo is self-contained within its own subfolder
 - When creating new scripts for a specific demo, place them in `Assets/App/DemoName/Scripts/`
 - When creating shared functionality, place scripts in `Assets/App/Shared/Scripts/`
@@ -181,4 +182,4 @@ This project uses the following packages (already installed):
 - When referencing assets, prioritize those within the same demo folder or shared folder
 - Each demo should be able to run independently with minimal dependencies on other demos
 - **Learn from external patterns**: Study code patterns, techniques, and implementations from samples/external sources but adapt them within the App folder structure
-- **For XR features**: Always reference XR-Interaction-Toolkit-Examples project and follow XR Interaction Toolkit 3.2.1 patterns
+- **For XR features**: Always reference XR-Interaction-Toolkit-Examples and Unity-NorthStar projects and follow XR Interaction Toolkit 3.2.1 patterns
