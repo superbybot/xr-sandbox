@@ -1,4 +1,4 @@
-# Unity Project Rules for Claude Code
+# Unity Project Rules
 
 ## Project Structure
 This Unity project focuses on the **App folder** with a **demo-based architecture** - everything outside App/ is for samples or external sources.
@@ -169,7 +169,7 @@ This project uses the following packages (already installed):
 - Maintain compatibility with Unity's serialization system
 - Follow XR Interaction Toolkit 3.2.1 best practices
 
-## Claude Code Integration Notes
+## AI Assistant Integration Notes
 - **MODIFY ONLY `/Assets/App/` folder** - never modify files outside App/
 - **Can reference external code**: Use samples and external sources as examples and learning material
 - **Reference projects available**: unity_kartinggame, unity_towerdefense, XR-Interaction-Toolkit-Examples, Unity-NorthStar
