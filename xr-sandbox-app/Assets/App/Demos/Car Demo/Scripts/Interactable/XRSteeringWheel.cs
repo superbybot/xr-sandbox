@@ -39,7 +39,6 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
                 if (Mathf.Abs(m_CurrentOffset) > 90.0f)
                 {
                     m_BaseAngle = targetAngle;
-                    m_AccumulatedAngle += m_CurrentOffset;
                     m_CurrentOffset = 0.0f;
                 }
             }
