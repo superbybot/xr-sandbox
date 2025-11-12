@@ -470,35 +470,47 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
             OnWheelRotated?.Invoke(angleDifference);
         }
 
-        private float CalculateWheelRotation()
+private float CalculateWheelRotation()
+{
+    float totalOffset = 0f;
+    int activeHandCount = 0;
+    
+    // Process left hand if active
+    if (_leftInteractor != null)
+    {
+        var interactorTransform = _leftInteractor.GetAttachTransform(this);
+        var localPoint = FindLocalPoint(interactorTransform.position);
+        
+        if (localPoint.magnitude > _minTrackingRadius)
         {
-            float totalOffset = 0f;
-            
-            if (_primaryInteractor == _leftInteractor && _leftInteractor != null)
-            {
-                var interactorTransform = _leftInteractor.GetAttachTransform(this);
-                var localPoint = FindLocalPoint(interactorTransform.position);
-                
-                if (localPoint.magnitude > _minTrackingRadius)
-                {
-                    _leftTrackedRotation.SetTargetFromVector(localPoint);
-                    totalOffset = _leftTrackedRotation.totalOffset;
-                }
-            }
-            else if (_primaryInteractor == _rightInteractor && _rightInteractor != null)
-            {
-                var interactorTransform = _rightInteractor.GetAttachTransform(this);
-                var localPoint = FindLocalPoint(interactorTransform.position);
-                
-                if (localPoint.magnitude > _minTrackingRadius)
-                {
-                    _rightTrackedRotation.SetTargetFromVector(localPoint);
-                    totalOffset = _rightTrackedRotation.totalOffset;
-                }
-            }
-            
-            return _baseWheelRotation + totalOffset;
+            _leftTrackedRotation.SetTargetFromVector(localPoint);
+            totalOffset += _leftTrackedRotation.totalOffset;
+            activeHandCount++;
         }
+    }
+    
+    // Process right hand if active
+    if (_rightInteractor != null)
+    {
+        var interactorTransform = _rightInteractor.GetAttachTransform(this);
+        var localPoint = FindLocalPoint(interactorTransform.position);
+        
+        if (localPoint.magnitude > _minTrackingRadius)
+        {
+            _rightTrackedRotation.SetTargetFromVector(localPoint);
+            totalOffset += _rightTrackedRotation.totalOffset;
+            activeHandCount++;
+        }
+    }
+    
+    // Average the offsets from both hands
+    if (activeHandCount > 1)
+    {
+        totalOffset /= activeHandCount;
+    }
+    
+    return _baseWheelRotation + totalOffset;
+}
         
         private void UpdateBaseWheelRotation()
         {
