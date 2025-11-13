@@ -44,20 +44,15 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
             }
         }
 
-        [Header("Custom Settings")] 
+        [Header("Custom Settings")]
         [SerializeField] private bool _onSelectByHover = false;
-        [SerializeField] private bool _enableHandPlacement;
-        
+
         [Header("Return to Origin Parameters")]
         [SerializeField] private bool _returnToOriginalRotation = true;
         [SerializeField] private float _returnSpeed = 5f;
-        
+
         [Header("On Hover Parameters")]
         [SerializeField] private float _nearInteractionDistanceThreshold = 0.2f;
-
-        [Header("Hand placement Parameters")]
-        [SerializeField] private float _handPlacementSmoothSpeed;
-        [SerializeField] private float _wheelRadius;
         
         [Header("Rotation Parameters")]
         [SerializeField] [Tooltip("Angle increments to snap to (0 = smooth)")]
@@ -85,12 +80,6 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
         
         private IXRInteractor _leftInteractor;
         private IXRInteractor _rightInteractor;
-        private Transform _leftHandAttachPoint;
-        private Transform _rightHandAttachPoint;
-        private Vector3 _leftTargetPosition;
-        private Vector3 _rightTargetPosition;
-        private Quaternion _leftTargetRotation;
-        private Quaternion _rightTargetRotation;
         
         private Quaternion _originalRotation;
         private bool _isReturning = false;
@@ -105,53 +94,10 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
         {
             base.Awake();
             _originalRotation = _wheelTransform.localRotation;
-            
-            if (_leftHandAttachPoint == null && _enableHandPlacement)
-            {
-                GameObject leftAttach = new GameObject("LeftHandAttachPoint");
-                _leftHandAttachPoint = leftAttach.transform;
-                _leftHandAttachPoint.SetParent(_wheelTransform);
-                _leftHandAttachPoint.localPosition = Vector3.zero;
-                _leftHandAttachPoint.localRotation = Quaternion.identity;
-            }
-    
-            if (_rightHandAttachPoint == null && _enableHandPlacement)
-            {
-                GameObject rightAttach = new GameObject("RightHandAttachPoint");
-                _rightHandAttachPoint = rightAttach.transform;
-                _rightHandAttachPoint.SetParent(_wheelTransform);
-                _rightHandAttachPoint.localPosition = Vector3.zero;
-                _rightHandAttachPoint.localRotation = Quaternion.identity;
-            }
         }
         
         public override Transform GetAttachTransform(IXRInteractor interactor)
         {
-            if (!_enableHandPlacement)
-            {
-                return base.GetAttachTransform(interactor);
-            }
-    
-            if (interactor == _leftInteractor && _leftHandAttachPoint != null)
-            {
-                return _leftHandAttachPoint;
-            }
-    
-            if (interactor == _rightInteractor && _rightHandAttachPoint != null)
-            {
-                return _rightHandAttachPoint;
-            }
-    
-            if (_leftInteractor == null && _leftHandAttachPoint != null)
-            {
-                return _leftHandAttachPoint;
-            }
-    
-            if (_rightInteractor == null && _rightHandAttachPoint != null)
-            {
-                return _rightHandAttachPoint;
-            }
-    
             return base.GetAttachTransform(interactor);
         }
         
@@ -204,11 +150,6 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
                     _primaryInteractor = _leftInteractor;
                 }
                 
-                if (_enableHandPlacement)
-                {
-                    UpdateHandPlacement(_leftInteractor, _leftHandAttachPoint,
-                        ref _leftTargetPosition, ref _leftTargetRotation, true);
-                }
                 
                 var interactorTransform = _leftInteractor.GetAttachTransform(this);
                 var localPoint = FindLocalPoint(interactorTransform.position);
@@ -224,11 +165,6 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
                     _primaryInteractor = _rightInteractor;
                 }
                 
-                if (_enableHandPlacement)
-                {
-                    UpdateHandPlacement(_rightInteractor, _rightHandAttachPoint,
-                        ref _rightTargetPosition, ref _rightTargetRotation, true);
-                }
                 
                 var interactorTransform = _rightInteractor.GetAttachTransform(this);
                 var localPoint = FindLocalPoint(interactorTransform.position);
@@ -286,11 +222,6 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
                     _primaryInteractor = _leftInteractor;
                 }
                 
-                if (_enableHandPlacement)
-                {
-                    UpdateHandPlacement(_leftInteractor, _leftHandAttachPoint,
-                        ref _leftTargetPosition, ref _leftTargetRotation, true);
-                }
                 
                 var interactorTransform = _leftInteractor.GetAttachTransform(this);
                 var localPoint = FindLocalPoint(interactorTransform.position);
@@ -306,11 +237,6 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
                     _primaryInteractor = _rightInteractor;
                 }
                 
-                if (_enableHandPlacement)
-                {
-                    UpdateHandPlacement(_rightInteractor, _rightHandAttachPoint,
-                        ref _rightTargetPosition, ref _rightTargetRotation, true);
-                }
                 
                 var interactorTransform = _rightInteractor.GetAttachTransform(this);
                 var localPoint = FindLocalPoint(interactorTransform.position);
@@ -365,78 +291,9 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
                     else if (IsSelected())
                     {
                         RotateWheel();
-                
-                        if (_enableHandPlacement)
-                        {
-                            if (_leftInteractor != null && _leftHandAttachPoint != null)
-                            {
-                                UpdateHandPlacement(_leftInteractor, _leftHandAttachPoint,
-                                    ref _leftTargetPosition, ref _leftTargetRotation, false);
-                            }
-                    
-                            if (_rightInteractor != null && _rightHandAttachPoint != null)
-                            {
-                                UpdateHandPlacement(_rightInteractor, _rightHandAttachPoint,
-                                    ref _rightTargetPosition, ref _rightTargetRotation, false);
-                            }
-                        }
                     }
                 }
                     break;
-            }
-        }
-        
-        private void UpdateHandPlacement(IXRInteractor interactor, Transform attachPoint,
-            ref Vector3 targetPosition, ref Quaternion targetRotation,
-            bool isInitialPlacement)
-        {
-            if (attachPoint == null || _wheelTransform == null || interactor == null)
-            {
-                return;
-            }
-
-            var interactorTransform = interactor.GetAttachTransform(this);
-            Vector3 interactorPosition = interactorTransform.position;
-    
-            Vector3 wheelCenter = _wheelTransform.position;
-            Vector3 wheelForward = _wheelTransform.forward;
-    
-            Vector3 toHand = interactorPosition - wheelCenter;
-    
-            Vector3 projectedOffset = toHand - Vector3.Project(toHand, wheelForward);
-    
-            if (projectedOffset.magnitude > 0.001f)
-            {
-                projectedOffset = projectedOffset.normalized * _wheelRadius;
-            }
-            else
-            {
-                projectedOffset = _wheelTransform.up * _wheelRadius;
-            }
-    
-            targetPosition = projectedOffset;
-    
-            Vector3 outwardDir = projectedOffset.normalized;
-            targetRotation = Quaternion.LookRotation(wheelForward, -outwardDir);
-    
-            if (isInitialPlacement)
-            {
-                attachPoint.localPosition = targetPosition;
-                attachPoint.localRotation = targetRotation;
-            }
-            else
-            {
-                attachPoint.localPosition = Vector3.Lerp(
-                    attachPoint.localPosition,
-                    targetPosition,
-                    Time.deltaTime * _handPlacementSmoothSpeed
-                );
-        
-                attachPoint.localRotation = Quaternion.Slerp(
-                    attachPoint.localRotation,
-                    targetRotation,
-                    Time.deltaTime * _handPlacementSmoothSpeed
-                );
             }
         }
 
@@ -548,45 +405,6 @@ private float CalculateWheelRotation()
             {
                 _wheelTransform.localRotation = _originalRotation;
                 _isReturning = false;
-            }
-        }
-        
-        private void OnDrawGizmosSelected()
-        {
-            if (_wheelTransform == null || !_enableHandPlacement)
-            {
-                return;
-            }
-        
-            Gizmos.color = Color.yellow;
-    
-            const int segments = 32;
-            Vector3 center = _wheelTransform.position;
-            Vector3 forward = _wheelTransform.forward;
-            Vector3 right = _wheelTransform.right;
-            Vector3 up = _wheelTransform.up;
-    
-            for (int i = 0; i < segments; i++)
-            {
-                float angle1 = (i / (float)segments) * 2f * Mathf.PI;
-                float angle2 = ((i + 1) / (float)segments) * 2f * Mathf.PI;
-        
-                Vector3 p1 = center + (Mathf.Cos(angle1) * right + Mathf.Sin(angle1) * up) * _wheelRadius;
-                Vector3 p2 = center + (Mathf.Cos(angle2) * right + Mathf.Sin(angle2) * up) * _wheelRadius;
-        
-                Gizmos.DrawLine(p1, p2);
-            }
-    
-            if (_leftHandAttachPoint != null)
-            {
-                Gizmos.color = Color.blue;
-                Gizmos.DrawWireSphere(_leftHandAttachPoint.position, 0.02f);
-            }
-    
-            if (_rightHandAttachPoint != null)
-            {
-                Gizmos.color = Color.red;
-                Gizmos.DrawWireSphere(_rightHandAttachPoint.position, 0.02f);
             }
         }
     }
