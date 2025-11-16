@@ -73,8 +73,6 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
         [SerializeField] [Tooltip("Rotation smoothing (higher = smoother but less responsive)")]
         private float _rotationSmoothing = 8f;
 
-        
-        
         [SerializeField] private Transform _wheelTransform;
         public UnityEvent<float> OnWheelRotated;
         
@@ -103,22 +101,37 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
         
         public override bool IsSelectableBy(IXRSelectInteractor interactor)
         {
+            if (_onSelectByHover)
+            {
+                return false;
+            }
+
             if (interactor is NearFarInteractor nearFar)
             {
-                return base.IsSelectableBy(interactor) && 
-                       nearFar.selectionRegion.Value == NearFarInteractor.Region.Near;
+                Transform interactorAttachTransform = nearFar.GetAttachTransform(this);
+                float distance = Vector3.Distance(interactorAttachTransform.position, this.transform.position);
+
+                if (distance <= _nearInteractionDistanceThreshold)
+                {
+                    return base.IsSelectableBy(interactor);
+                }
+                else
+                {
+                    return false;
+                }
             }
-            
+
             return base.IsSelectableBy(interactor) && interactor is not XRRayInteractor;
         }
 
         public override bool IsHoverableBy(IXRHoverInteractor interactor)
         {
+
             if (interactor is NearFarInteractor nearFar)
             {
                 Transform interactorAttachTransform = nearFar.GetAttachTransform(this);
                 float distance = Vector3.Distance(interactorAttachTransform.position, this.transform.position);
-                
+
                 if (distance <= _nearInteractionDistanceThreshold)
                 {
                     return base.IsHoverableBy(interactor);
@@ -128,7 +141,7 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
                     return false;
                 }
             }
-    
+
             return base.IsHoverableBy(interactor) && interactor is not XRRayInteractor;
         }
 
@@ -326,47 +339,44 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
             OnWheelRotated?.Invoke(angleDifference);
         }
 
-private float CalculateWheelRotation()
-{
-    float totalOffset = 0f;
-    int activeHandCount = 0;
-    
-    // Process left hand if active
-    if (_leftInteractor != null)
-    {
-        var interactorTransform = _leftInteractor.GetAttachTransform(this);
-        var localPoint = FindLocalPoint(interactorTransform.position);
-        
-        if (localPoint.magnitude > _minTrackingRadius)
+        private float CalculateWheelRotation()
         {
-            _leftTrackedRotation.SetTargetFromVector(localPoint);
-            totalOffset += _leftTrackedRotation.totalOffset;
-            activeHandCount++;
+            float totalOffset = 0f;
+            int activeHandCount = 0;
+            
+            if (_leftInteractor != null)
+            {
+                var interactorTransform = _leftInteractor.GetAttachTransform(this);
+                var localPoint = FindLocalPoint(interactorTransform.position);
+                
+                if (localPoint.magnitude > _minTrackingRadius)
+                {
+                    _leftTrackedRotation.SetTargetFromVector(localPoint);
+                    totalOffset += _leftTrackedRotation.totalOffset;
+                    activeHandCount++;
+                }
+            }
+            
+            if (_rightInteractor != null)
+            {
+                var interactorTransform = _rightInteractor.GetAttachTransform(this);
+                var localPoint = FindLocalPoint(interactorTransform.position);
+                
+                if (localPoint.magnitude > _minTrackingRadius)
+                {
+                    _rightTrackedRotation.SetTargetFromVector(localPoint);
+                    totalOffset += _rightTrackedRotation.totalOffset;
+                    activeHandCount++;
+                }
+            }
+            
+            if (activeHandCount > 1)
+            {
+                totalOffset /= activeHandCount;
+            }
+            
+            return _baseWheelRotation + totalOffset;
         }
-    }
-    
-    // Process right hand if active
-    if (_rightInteractor != null)
-    {
-        var interactorTransform = _rightInteractor.GetAttachTransform(this);
-        var localPoint = FindLocalPoint(interactorTransform.position);
-        
-        if (localPoint.magnitude > _minTrackingRadius)
-        {
-            _rightTrackedRotation.SetTargetFromVector(localPoint);
-            totalOffset += _rightTrackedRotation.totalOffset;
-            activeHandCount++;
-        }
-    }
-    
-    // Average the offsets from both hands
-    if (activeHandCount > 1)
-    {
-        totalOffset /= activeHandCount;
-    }
-    
-    return _baseWheelRotation + totalOffset;
-}
         
         private void UpdateBaseWheelRotation()
         {
