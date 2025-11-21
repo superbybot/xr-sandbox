@@ -36,6 +36,8 @@ These directories are available for learning patterns, techniques, and implement
 - **C:\Users\Wonderfy149\Documents\unity_towerdefense** - Tower defense project for strategy game patterns and AI
 - **C:\Users\Wonderfy149\Documents\XR-Interaction-Toolkit-Examples** - XR Interaction Toolkit examples and reference implementations
 - **C:\Users\Wonderfy149\Documents\Unity-NorthStar** - North Star AR/XR headset project for advanced XR implementations and hardware integration patterns
+- **C:\Users\Wonderfy149\Documents\Unity-PassthroughCameraApiSamples** - Unity passthrough camera API samples for AR camera integration patterns
+- **C:\Users\Wonderfy149\Documents\voicesdk-samples-whisperer** - Voice SDK samples with Whisper integration for speech recognition and voice interaction patterns
 
 When working on XR features, prioritize referencing the XR-Interaction-Toolkit-Examples and Unity-NorthStar projects for best practices and implementation patterns.
 
@@ -119,6 +121,7 @@ This project uses **Unity XR Interaction Toolkit version 3.2.1**
 - Use clear, descriptive variable and method names
 - Comment complex algorithms or Unity-specific workarounds
 - Document public fields that appear in the Inspector
+- **Avoid small explanatory comments** - do not add comments that simply restate what the code does (e.g., "// Wait for camera permissions" above a while loop waiting for permissions)
 
 ### Asset Management
 - Use consistent naming conventions for assets within each demo
@@ -172,7 +175,7 @@ This project uses the following packages (already installed):
 ## Claude Code Integration Notes
 - **MODIFY ONLY `/Assets/App/` folder** - never modify files outside App/
 - **Can reference external code**: Use samples and external sources as examples and learning material
-- **Reference projects available**: unity_kartinggame, unity_towerdefense, XR-Interaction-Toolkit-Examples, Unity-NorthStar
+- **Reference projects available**: unity_kartinggame, unity_towerdefense, XR-Interaction-Toolkit-Examples, Unity-NorthStar, Unity-PassthroughCameraApiSamples, voicesdk-samples-whisperer
 - **Demo-based development**: Each demo is self-contained within its own subfolder inside `/Assets/App/Demos/`.
 - When creating a new demo, place it inside the `/Assets/App/Demos/` folder (e.g., `/Assets/App/Demos/NewDemoName/`).
 - When creating new scripts for a specific demo, place them in `Assets/App/Demos/DemoName/Scripts/`
