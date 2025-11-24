@@ -1,0 +1,190 @@
+# Unity Project Rules for Antigravity
+
+## Project Structure
+This Unity project focuses on the **App folder** with a **demo-based architecture** - everything outside App/ is for samples or external sources.
+
+**Main development happens in:**
+- `/Assets/App/` - Main application folder
+  - `/Assets/App/Demos/` - Folder containing all demos
+    - `/Assets/App/Demos/Demo1/` - First demo with its own complete structure
+      - `Scripts/` - Demo1-specific C# scripts
+      - `Prefabs/` - Demo1-specific GameObjects
+      - `Materials/` - Demo1-specific materials and shaders
+      - `Scenes/` - Demo1 scenes
+      - `Textures/` - Demo1 image assets
+      - `Audio/` - Demo1 sound files
+    - `/Assets/App/Demos/Demo2/` - Second demo with its own complete structure
+      - `Scripts/` - Demo2-specific scripts
+      - `Prefabs/` - Demo2-specific GameObjects
+      - etc...
+  - `/Assets/App/Shared/` - Shared resources across all demos
+    - `Scripts/` - Common utility scripts, managers, base classes
+    - `Prefabs/` - Reusable GameObjects across demos
+    - `Materials/` - Common materials and shaders
+    - `Textures/` - Shared image assets
+    - `Audio/` - Shared sound files
+    - `Data/` - ScriptableObjects and configuration data
+
+**Ignore for development:**
+- Everything outside `/Assets/App/` (samples, external sources, third-party assets)
+- **Note**: Can reference and learn from external code for patterns and examples, but DO NOT modify anything outside App/
+
+## Reference Directories
+These directories are available for learning patterns, techniques, and implementations. Reference them for examples but DO NOT modify them:
+
+- **C:\Users\Wonderfy149\Documents\unity_kartinggame** - Karting game project for racing mechanics and gameplay patterns
+- **C:\Users\Wonderfy149\Documents\unity_towerdefense** - Tower defense project for strategy game patterns and AI
+- **C:\Users\Wonderfy149\Documents\XR-Interaction-Toolkit-Examples** - XR Interaction Toolkit examples and reference implementations
+- **C:\Users\Wonderfy149\Documents\Unity-NorthStar** - North Star AR/XR headset project for advanced XR implementations and hardware integration patterns
+- **C:\Users\Wonderfy149\Documents\Unity-PassthroughCameraApiSamples** - Unity passthrough camera API samples for AR camera integration patterns
+- **C:\Users\Wonderfy149\Documents\voicesdk-samples-whisperer** - Voice SDK samples with Whisper integration for speech recognition and voice interaction patterns
+
+When working on XR features, prioritize referencing the XR-Interaction-Toolkit-Examples and Unity-NorthStar projects for best practices and implementation patterns.
+
+## XR Development Standards
+
+### XR Interaction Toolkit Version
+This project uses **Unity XR Interaction Toolkit version 3.2.1**
+
+### XR-Specific Guidelines
+- Follow XR Interaction Toolkit 3.2.1 API and best practices
+- Use the new input system with XR controllers
+- Implement proper XR interaction states (hover, select, activate)
+- Use XR Interactors and Interactables for object manipulation
+- Leverage XR Ray Interactors for distant interactions
+- Use XR Direct Interactors for near-field hand interactions
+- Implement proper locomotion using XR Toolkit's locomotion system
+- Follow XR performance optimization guidelines (maintain 90+ FPS for VR)
+- Test XR interactions in both headset and simulation modes
+- Use XR Interaction Toolkit's affordance system for visual feedback
+- Implement proper hand tracking when available
+- Use XR Rig components for camera and controller management
+- Reference **XR-Interaction-Toolkit-Examples** and **Unity-NorthStar** projects for implementation patterns
+
+### XR Performance Considerations
+- Minimize draw calls and overdraw for XR rendering
+- Use single-pass stereo rendering when possible
+- Optimize shaders for mobile XR platforms
+- Implement dynamic resolution scaling for performance
+- Use object pooling extensively for XR scenarios
+- Profile regularly using Unity's XR Performance tools
+
+## Code Standards
+
+### C# Conventions (Microsoft Guidelines)
+- Use PascalCase for public methods, properties, classes, and interfaces
+- Use camelCase for private fields, local variables, and method parameters
+- Use PascalCase for public fields (avoid when possible, prefer properties)
+- Prefix interface names with 'I': `IPlayerController`
+- Use meaningful and descriptive names: `playerHealth` not `pH`
+- Use explicit access modifiers (public, private, protected, internal)
+- Add [SerializeField] for private fields that need Inspector exposure
+- Use `var` when the type is obvious from the right side of assignment
+- Use explicit types when clarity is important
+- Place using statements at the top of the file, outside namespace
+- Use file-scoped namespace declarations when possible (C# 10+)
+
+### Unity-Specific Guidelines
+- MonoBehaviour scripts should inherit from MonoBehaviour
+- Use Unity's naming conventions for Unity-specific methods (Start, Update, Awake, etc.)
+- Prefer GetComponent<T>() over GameObject.Find() for performance
+- Use **UniTask** instead of Coroutines for async operations
+- Use **UniRx R3** for reactive programming and event handling
+- Use **VContainer** for dependency injection instead of singletons
+- Cache component references in Awake() or Start()
+- Use UniTask for time-based operations instead of Update() loops when possible
+- Leverage R3's reactive streams for UI events, game events, and data flow
+- Structure code with VContainer's lifecycle and dependency injection patterns
+
+### Performance Best Practices
+- Avoid Update() for non-frame-dependent logic; use UniTask or R3 observables
+- Use CompareTag() instead of gameObject.tag ==
+- Cache expensive operations and component references
+- Use object pooling for bullets, effects, etc.
+- Minimize garbage collection with proper memory management
+- Use UniTask.Yield() instead of yield return null in async methods
+- Use R3's Subject and Observable patterns for decoupled communication
+- Leverage VContainer's object lifecycle management
+
+### Code Organization
+- Each demo is self-contained with its own Scripts, Prefabs, Materials, etc.
+- One public class per file
+- Group related functionality into separate scripts within each demo
+- Use regions to organize large classes
+- Separate data classes from MonoBehaviour classes when appropriate
+- Place shared/common code in `/Assets/App/Shared/Scripts/`
+- Create ScriptableObjects for demo-specific data in each demo's folder
+- Use shared ScriptableObjects in `/Assets/App/Shared/Data/` for cross-demo configuration
+
+### Documentation
+- Add XML documentation for public APIs
+- Use clear, descriptive variable and method names
+- Comment complex algorithms or Unity-specific workarounds
+- Document public fields that appear in the Inspector
+- **Avoid small explanatory comments** - do not add comments that simply restate what the code does (e.g., "// Wait for camera permissions" above a while loop waiting for permissions)
+
+### Asset Management
+- Use consistent naming conventions for assets within each demo
+- Organize assets in logical folder structures within each demo
+- Keep demo-specific assets within their respective demo folders
+- Place shared assets in `/Assets/App/Shared/` subfolders
+- Reference assets through code rather than drag-and-drop when possible
+- Use Resources.Load() sparingly; prefer direct references
+- Consider creating asset bundles per demo for modular loading
+
+## Common Patterns
+- **VContainer DI pattern** for managers and services instead of singletons
+- **UniRx R3 reactive patterns** for event systems and data flow
+- **UniTask async/await pattern** for asynchronous operations
+- State machines for complex behaviors using R3 observables
+- Component-based architecture following Unity's design
+- MVVM/MVP patterns with R3 for UI and data binding
+- Service locator pattern through VContainer
+- **XR Interaction patterns** from XR Interaction Toolkit 3.2.1
+
+## Required Packages
+This project uses the following packages (already installed):
+
+- **XR Interaction Toolkit** - `com.unity.xr.interaction.toolkit` version **3.2.1** - Core XR interactions and locomotion
+- **UniTask** - `com.cysharp.unitask` - Async/await support for Unity
+- **UniRx R3** - `com.cysharp.r3` - Reactive Extensions for Unity  
+- **VContainer** - `jp.hadashikick.vcontainer` - Dependency injection container
+
+## Testing
+- Write unit tests for non-MonoBehaviour classes
+- Use Unity Test Runner for integration tests
+- Test public APIs and edge cases
+- Mock Unity dependencies when testing logic classes
+- Test XR interactions in both editor simulation and device
+
+## Version Control
+- Ignore /Library/, /Temp/, /Logs/ directories
+- Include .meta files for proper asset tracking
+- Use Unity's YAML serialization for scenes and prefabs
+- Commit meaningful, atomic changes with clear messages
+
+## When Working on This Project
+- Always test changes in Play mode
+- Test XR features using XR Device Simulator when headset unavailable
+- Consider performance impact of modifications
+- Follow Unity's component-based design principles
+- Use Unity's built-in events and systems when available
+- Maintain compatibility with Unity's serialization system
+- Follow XR Interaction Toolkit 3.2.1 best practices
+
+## Antigravity Integration Notes
+- **MODIFY ONLY `/Assets/App/` folder** - never modify files outside App/
+- **Can reference external code**: Use samples and external sources as examples and learning material
+- **Reference projects available**: unity_kartinggame, unity_towerdefense, XR-Interaction-Toolkit-Examples, Unity-NorthStar, Unity-PassthroughCameraApiSamples, voicesdk-samples-whisperer
+- **Demo-based development**: Each demo is self-contained within its own subfolder inside `/Assets/App/Demos/`.
+- When creating a new demo, place it inside the `/Assets/App/Demos/` folder (e.g., `/Assets/App/Demos/NewDemoName/`).
+- When creating new scripts for a specific demo, place them in `Assets/App/Demos/DemoName/Scripts/`
+- When creating shared functionality, place scripts in `Assets/App/Shared/Scripts/`
+- Always validate script compilation before committing changes
+- Use Unity's built-in naming conventions for consistency
+- Consider Inspector usability when designing public fields
+- Implement proper error handling for Unity-specific operations
+- When referencing assets, prioritize those within the same demo folder or shared folder
+- Each demo should be able to run independently with minimal dependencies on other demos
+- **Learn from external patterns**: Study code patterns, techniques, and implementations from samples/external sources but adapt them within the App folder structure
+- **For XR features**: Always reference XR-Interaction-Toolkit-Examples and Unity-NorthStar projects and follow XR Interaction Toolkit 3.2.1 patterns
