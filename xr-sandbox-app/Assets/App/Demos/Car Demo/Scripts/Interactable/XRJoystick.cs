@@ -20,7 +20,8 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
 
         [Header("Movement Settings")]
         [SerializeField] private MovementDirection _movementDirection = MovementDirection.Both_Axes;
-        [SerializeField] [Tooltip("Maximum angle the joystick can tilt")]
+        [SerializeField] 
+        [Tooltip("Maximum angle the joystick can tilt")]
         [Range(1.0f, 90.0f)]
         private float _maxAngle = 30.0f;
 
@@ -35,10 +36,22 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
         [SerializeField] private Transform _handleTransform;
         public UnityEvent<Vector2> OnJoystickMoved;
 
+        [Header("Debug Values")]
+        [SerializeField, Tooltip("Current normalized joystick value (read-only)")] private Vector2 _currentValue;
+        [SerializeField, Tooltip("Current up-down angle")] private float _currentUpDownAngle;
+        [SerializeField, Tooltip("Current left-right angle")] private float _currentLeftRightAngle;
+        [SerializeField, Tooltip("Current direction vector from interactor")] private Vector3 _currentDirection;
+        [SerializeField, Tooltip("Snapped cardinal target values")] private Vector2 _snappedCardinalTarget;
+
         private IXRInteractor _interactor;
         private Quaternion _originalRotation;
         private Quaternion _targetRotation;
         private bool _isReturning = false;
+
+        /// <summary>
+        /// Current normalized joystick value (x, y).
+        /// </summary>
+        public Vector2 Value { get; private set; }
 
         protected override void Awake()
         {
@@ -216,6 +229,11 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
                 leftRightAngle / _maxAngle,
                 upDownAngle / _maxAngle
             );
+            Value = normalizedValues;
+            _currentValue = normalizedValues;
+            _currentUpDownAngle = upDownAngle;
+            _currentLeftRightAngle = leftRightAngle;
+            _currentDirection = direction;
             OnJoystickMoved?.Invoke(normalizedValues);
         }
 
@@ -231,20 +249,22 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
 
         private void SetNearestCardinalTarget()
         {
-            float currentX = 0f;
-            float currentZ = 0f;
-
             var currentRotation = _handleTransform.localRotation * Quaternion.Inverse(_originalRotation);
             var euler = currentRotation.eulerAngles;
 
-            currentX = Mathf.Sin(euler.z * Mathf.Deg2Rad);
-            currentZ = Mathf.Sin(euler.x * Mathf.Deg2Rad);
+            float currentLeftRightAngle = Mathf.DeltaAngle(0, -euler.z);
+            float currentUpDownAngle = Mathf.DeltaAngle(0, euler.x);
 
-            float snappedX = Mathf.Round(currentX);
-            float snappedZ = Mathf.Round(currentZ);
+            float normalizedX = Mathf.Clamp(currentLeftRightAngle / _maxAngle, -1f, 1f);
+            float normalizedZ = Mathf.Clamp(currentUpDownAngle / _maxAngle, -1f, 1f);
+
+            float snappedX = Mathf.Round(normalizedX);
+            float snappedZ = Mathf.Round(normalizedZ);
 
             snappedX = Mathf.Clamp(snappedX, -1f, 1f);
             snappedZ = Mathf.Clamp(snappedZ, -1f, 1f);
+
+            _snappedCardinalTarget = new Vector2(snappedX, snappedZ);
 
             float targetXAngle = snappedX * _maxAngle;
             float targetZAngle = snappedZ * _maxAngle;

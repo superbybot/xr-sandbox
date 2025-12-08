@@ -74,6 +74,12 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
 
         [SerializeField] private Transform _wheelTransform;
         public UnityEvent<float> OnWheelRotated;
+
+        [Header("Debug Values")]
+        [SerializeField, Tooltip("Current normalized steering value (-1 to 1)")] private float _currentValue;
+        [SerializeField, Tooltip("Current smoothed wheel rotation")] private float _currentSmoothedRotation;
+        [SerializeField, Tooltip("Current base wheel rotation")] private float _currentBaseRotation;
+        [SerializeField, Tooltip("Total rotation offset from all interactors")] private float _totalRotationOffset;
         
         private IXRInteractor _leftInteractor;
         private IXRInteractor _rightInteractor;
@@ -86,6 +92,11 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
         private float _baseWheelRotation = 0f;
         private float _smoothedWheelRotation = 0f;
         private IXRInteractor _primaryInteractor;
+
+        /// <summary>
+        /// Current normalized steering value (-1 to 1).
+        /// </summary>
+        public float Value => Mathf.Clamp(_smoothedWheelRotation / _maxAngle, -1f, 1f);
 
         protected override void Awake()
         {
@@ -334,7 +345,12 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
             float angleDifference = _smoothedWheelRotation - currentWheelAngle;
             
             _wheelTransform.Rotate(_wheelTransform.forward, angleDifference, Space.World);
-            
+
+            _currentValue = Value;
+            _currentSmoothedRotation = _smoothedWheelRotation;
+            _currentBaseRotation = _baseWheelRotation;
+            _totalRotationOffset = targetRotation - _baseWheelRotation;
+
             OnWheelRotated?.Invoke(angleDifference);
         }
 

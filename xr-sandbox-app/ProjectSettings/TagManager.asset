@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Anchor
+  - Checkpoint
   layers:
   - Default
   - TransparentFX
@@ -13,8 +14,8 @@ TagManager:
   - Water
   - UI
   - 
-  - 
-  - 
+  - XR - UI Object
+  - XR - Physics Object
   - 
   - 
   - 

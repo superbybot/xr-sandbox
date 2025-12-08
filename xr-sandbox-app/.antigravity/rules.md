@@ -46,6 +46,8 @@ When working on XR features, prioritize referencing the XR-Interaction-Toolkit-E
 ### XR Interaction Toolkit Version
 This project uses **Unity XR Interaction Toolkit version 3.2.1**
 
+**IMPORTANT**: Use **Unity XR Interaction Toolkit ONLY** - do not use Meta XR SDK, Oculus SDK, or other platform-specific XR SDKs. All XR functionality should be implemented using Unity's cross-platform XR Interaction Toolkit.
+
 ### XR-Specific Guidelines
 - Follow XR Interaction Toolkit 3.2.1 API and best practices
 - Use the new input system with XR controllers
