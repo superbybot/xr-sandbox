@@ -80,6 +80,7 @@ namespace App.Demos.CarDemo.Scripts
             if (frontLeftWheel != null)
                 frontLeftWheel.brakeTorque = _currentBrake;
             if (frontRightWheel != null)
+
                 frontRightWheel.brakeTorque = _currentBrake;
             if (rearLeftWheel != null)
                 rearLeftWheel.brakeTorque = _currentBrake;

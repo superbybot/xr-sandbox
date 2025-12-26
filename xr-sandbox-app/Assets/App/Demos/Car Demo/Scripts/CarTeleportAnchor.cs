@@ -109,17 +109,34 @@ namespace App.Demos.CarDemo.Scripts
         private async UniTaskVoid ExitCarAsync()
         {
             isSeated = false;
-            
+
             await UniTask.WaitForSeconds(0.2f);
-            
+
             EnableLocomotion();
 
             if (_currentDriver != null)
             {
                 _currentDriver.SetParent(null);
+
+                // Position player at exit point if specified
+                if (exitPoint != null)
+                {
+                    _currentDriver.position = exitPoint.position;
+
+                    // Ensure player is standing upright (up vector aligned to world up)
+                    // Use LookRotation to align forward direction while keeping up vector world-aligned
+                    Vector3 forward = exitPoint.forward;
+                    forward.y = 0; // Remove any vertical component to ensure upright orientation
+                    if (forward == Vector3.zero)
+                    {
+                        forward = Vector3.forward; // Default forward if exit point has no horizontal forward direction
+                    }
+                    _currentDriver.rotation = Quaternion.LookRotation(forward.normalized, Vector3.up);
+                }
+
                 _currentDriver = null;
             }
-            
+
             OnCarExit?.Invoke();
             _onCarExitSubject.OnNext(Unit.Default);
         }

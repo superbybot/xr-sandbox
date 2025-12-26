@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.XR.Interaction.Toolkit;
@@ -8,6 +9,7 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
 {
     public class XRSteeringWheel : XRBaseInteractable
     {
+        [Serializable]
         struct TrackedRotation
         {
             float m_BaseAngle;
@@ -53,49 +55,28 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
         [Header("On Hover Parameters")]
         [SerializeField] private float _nearInteractionDistanceThreshold = 0.2f;
         
-        [Header("Rotation Parameters")]
-        [SerializeField] [Tooltip("Angle increments to snap to (0 = smooth)")]
-        private float _angleIncrement = 0f;
+        [Header("Rotation Parameters")] 
+        [SerializeField] private float _angleIncrement = 0f;
+        [SerializeField] private float _minTrackingRadius = 0.05f;
+        [SerializeField] private bool _clampRotation = true;
+        [SerializeField] private float _maxAngle = 450f;
+        [SerializeField] private float _minAngle = -450f;
         
-        [SerializeField] [Tooltip("Minimum distance from center before tracking (prevents center jitter)")]
-        private float _minTrackingRadius = 0.05f;
-        
-        [SerializeField] [Tooltip("Clamp rotation to min/max angles")]
-        private bool _clampRotation = true;
-        
-        [SerializeField] [Tooltip("Maximum rotation angle")]
-        private float _maxAngle = 450f;
-        
-        [SerializeField] [Tooltip("Minimum rotation angle")]
-        private float _minAngle = -450f;
-        
-        [SerializeField] [Tooltip("Rotation smoothing (higher = smoother but less responsive)")]
-        private float _rotationSmoothing = 8f;
-
+        [SerializeField] private float _rotationSmoothing = 8f;
         [SerializeField] private Transform _wheelTransform;
-        public UnityEvent<float> OnWheelRotated;
-
-        [Header("Debug Values")]
-        [SerializeField, Tooltip("Current normalized steering value (-1 to 1)")] private float _currentValue;
-        [SerializeField, Tooltip("Current smoothed wheel rotation")] private float _currentSmoothedRotation;
-        [SerializeField, Tooltip("Current base wheel rotation")] private float _currentBaseRotation;
-        [SerializeField, Tooltip("Total rotation offset from all interactors")] private float _totalRotationOffset;
         
+        public UnityEvent<float> OnWheelRotated;
         private IXRInteractor _leftInteractor;
         private IXRInteractor _rightInteractor;
-        
+        private IXRInteractor _primaryInteractor;
         private Quaternion _originalRotation;
         private bool _isReturning = false;
-        
-        private TrackedRotation _leftTrackedRotation = new TrackedRotation();
-        private TrackedRotation _rightTrackedRotation = new TrackedRotation();
-        private float _baseWheelRotation = 0f;
-        private float _smoothedWheelRotation = 0f;
-        private IXRInteractor _primaryInteractor;
 
-        /// <summary>
-        /// Current normalized steering value (-1 to 1).
-        /// </summary>
+        [SerializeField] private TrackedRotation _leftTrackedRotation = new ();
+        [SerializeField] private TrackedRotation _rightTrackedRotation = new ();
+        [SerializeField] private float _baseWheelRotation = 0f;
+        [SerializeField] private float _smoothedWheelRotation = 0f;
+
         public float Value => Mathf.Clamp(_smoothedWheelRotation / _maxAngle, -1f, 1f);
 
         protected override void Awake()
@@ -172,7 +153,6 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
                 {
                     _primaryInteractor = _leftInteractor;
                 }
-                
                 
                 var interactorTransform = _leftInteractor.GetAttachTransform(this);
                 var localPoint = FindLocalPoint(interactorTransform.position);
@@ -345,12 +325,6 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
             float angleDifference = _smoothedWheelRotation - currentWheelAngle;
             
             _wheelTransform.Rotate(_wheelTransform.forward, angleDifference, Space.World);
-
-            _currentValue = Value;
-            _currentSmoothedRotation = _smoothedWheelRotation;
-            _currentBaseRotation = _baseWheelRotation;
-            _totalRotationOffset = targetRotation - _baseWheelRotation;
-
             OnWheelRotated?.Invoke(angleDifference);
         }
 
@@ -400,14 +374,14 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
         
         private float GetCurrentWheelRotation()
         {
-            Vector3 wheelForward = _wheelTransform.forward;
-            Vector3 wheelUp = _wheelTransform.up;
-            Vector3 originalUp = _originalRotation * Vector3.up;
-            
-            Vector3 currentUpProjected = Vector3.ProjectOnPlane(wheelUp, wheelForward);
-            Vector3 originalUpProjected = Vector3.ProjectOnPlane(originalUp, wheelForward);
-            
-            float angle = Vector3.SignedAngle(originalUpProjected, currentUpProjected, wheelForward);
+            Vector3 localForward = Vector3.forward;
+            Vector3 currentLocalUp = _wheelTransform.localRotation * Vector3.up;
+            Vector3 originalLocalUp = _originalRotation * Vector3.up;
+
+            Vector3 currentUpProjected = Vector3.ProjectOnPlane(currentLocalUp, localForward);
+            Vector3 originalUpProjected = Vector3.ProjectOnPlane(originalLocalUp, localForward);
+
+            float angle = Vector3.SignedAngle(originalUpProjected, currentUpProjected, localForward);
             return angle;
         }
 
@@ -425,10 +399,17 @@ namespace App.Demos.Car_Demo.Scripts.Interactable
                 _originalRotation,
                 Time.deltaTime * _returnSpeed
             );
+
+            float previousSmoothedRotation = _smoothedWheelRotation;
+            _smoothedWheelRotation = Mathf.Lerp(_smoothedWheelRotation, 0f, Time.deltaTime * _rotationSmoothing);
             
+            float angleDifference = _smoothedWheelRotation - previousSmoothedRotation;
+            OnWheelRotated?.Invoke(angleDifference);
+
             if (Quaternion.Angle(_wheelTransform.localRotation, _originalRotation) < 0.1f)
             {
                 _wheelTransform.localRotation = _originalRotation;
+                _smoothedWheelRotation = 0f;
                 _isReturning = false;
             }
         }

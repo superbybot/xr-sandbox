@@ -373,7 +373,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2884555317416728868}
   - component: {fileID: 6449619198440228163}
-  - component: {fileID: 6701341064380354355}
   m_Layer: 7
   m_Name: XR Joystick
   m_TagString: Untagged
@@ -474,40 +473,18 @@ MonoBehaviour:
   _movementDirection: 1
   _maxAngle: 30
   _returnToOriginalPosition: 1
-  _roundToNearestPosition: 0
+  _roundToNearestPosition: 1
   _returnSpeed: 5
   _nearInteractionDistanceThreshold: 0.2
   _handleTransform: {fileID: 6109979394559062466}
   OnJoystickMoved:
     m_PersistentCalls:
       m_Calls: []
---- !u!54 &6701341064380354355
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4083227921808186100}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 1
-  m_Constraints: 126
-  m_CollisionDetection: 0
+  _currentValue: {x: 0, y: 0}
+  _currentUpDownAngle: 0
+  _currentLeftRightAngle: 0
+  _currentDirection: {x: 0, y: 0, z: 0}
+  _snappedCardinalTarget: {x: 0, y: 0}
 --- !u!1 &6011397279051618541
 GameObject:
   m_ObjectHideFlags: 0
