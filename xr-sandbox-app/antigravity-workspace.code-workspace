@@ -1,0 +1,28 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../Unity-NorthStar"
+		},
+		{
+			"path": "../../unity_towerdefense"
+		},
+		{
+			"path": "../../unity_kartinggame"
+		},
+		{
+			"path": "../../XR-Interaction-Toolkit-Examples"
+		},
+		{
+			"path": "../../voicesdk-samples-whisperer"
+		},
+		{
+			"path": "../../Unity-PassthroughCameraApiSamples"
+		}
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true
+	}
+}
