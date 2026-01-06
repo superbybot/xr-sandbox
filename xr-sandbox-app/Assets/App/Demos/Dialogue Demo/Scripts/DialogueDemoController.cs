@@ -40,7 +40,7 @@ namespace App.Demos.DialogueDemo.Scripts
         {
             await UniTask.WaitForSeconds(welcomeDelay);
             
-            PromptManager.ShowPrompt("Welcome to the VR Dialogue Demo!", 4f);
+            PromptManager.ShowPrompt("Welcome to the VR Dialogue Demo!", 10f);
             
             if (enableDebugLogs)
                 Debug.Log("DialogueDemoController: Welcome message displayed");

@@ -443,7 +443,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showWelcomeOnStart: 1
-  welcomeDelay: 10
+  welcomeDelay: 1
   autoStartTutorial: 0
   tutorialStartDelay: 10
   enableDebugLogs: 1
@@ -491,7 +491,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9db132ae0df662a4b82169cbbfd4cd17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultPrompt: {fileID: 3489729194480005686, guid: f18976f7e22b44ecbab71eb8759ff83e, type: 3}
+  vrPromptPrefab: {fileID: 1802374452788901240, guid: f18976f7e22b44ecbab71eb8759ff83e, type: 3}
   useQueue: 1
   delayBetweenPrompts: 0.5
 --- !u!4 &1671130014

@@ -17,6 +17,10 @@ namespace App.Demos.DialogueDemo.Scripts
         [SerializeField] private float fixedSize = 0.002f;
         [SerializeField] private float maxDistance = 50f;
         
+        [Header("Smoothing")]
+        [SerializeField] private float positionSmoothSpeed = 5f;
+        [SerializeField] private float rotationSmoothSpeed = 8f;
+        
         [Header("References")]
         [SerializeField] private Canvas canvas;
         
@@ -84,8 +88,11 @@ namespace App.Demos.DialogueDemo.Scripts
             
             if (!isVisible) return;
             
-            transform.position = targetPos;
-            transform.rotation = Quaternion.LookRotation(transform.position - mainCamera.transform.position);
+            // Smoothly interpolate position and rotation instead of snapping
+            transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * positionSmoothSpeed);
+            
+            Quaternion targetRotation = Quaternion.LookRotation(transform.position - mainCamera.transform.position);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSmoothSpeed);
             
             float scale = distance * fixedSize * mainCamera.fieldOfView;
             transform.localScale = Vector3.one * scale;
