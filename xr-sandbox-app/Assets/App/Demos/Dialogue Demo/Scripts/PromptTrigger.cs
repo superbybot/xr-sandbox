@@ -28,17 +28,16 @@ namespace App.Demos.DialogueDemo.Scripts
 
         public enum TriggerType
         {
-            OnCollision,        // Trigger when player collides with this object
-            OnInteraction,      // Trigger when player interacts (grab/select) with this object
-            OnProximity,        // Trigger when player gets close
-            OnStart,            // Trigger when scene starts
-            Timed,              // Trigger after a delay
-            Manual              // Only trigger via code
+            OnCollision,
+            OnInteraction,
+            OnProximity,
+            OnStart,
+            Timed,
+            Manual
         }
 
         private void Start()
         {
-            // Setup based on trigger type
             switch (triggerType)
             {
                 case TriggerType.OnStart:
@@ -57,7 +56,6 @@ namespace App.Demos.DialogueDemo.Scripts
 
         private void Update()
         {
-            // Handle timed triggers
             if (triggerType == TriggerType.Timed)
             {
                 if (Time.time >= nextTriggerTime)
@@ -70,12 +68,11 @@ namespace App.Demos.DialogueDemo.Scripts
                     }
                     else if (triggerOnce)
                     {
-                        enabled = false; // Disable script after triggering once
+                        enabled = false;
                     }
                 }
             }
             
-            // Handle proximity triggers
             if (triggerType == TriggerType.OnProximity && !hasTriggered)
             {
                 CheckProximity();
@@ -86,7 +83,6 @@ namespace App.Demos.DialogueDemo.Scripts
         {
             if (triggerType == TriggerType.OnCollision)
             {
-                // Check if it's the player or player's hands
                 if (IsPlayer(other))
                 {
                     TriggerPrompt();
@@ -107,7 +103,6 @@ namespace App.Demos.DialogueDemo.Scripts
 
         private void SetupInteractionTrigger()
         {
-            // Try to get XR interaction components
             var interactable = GetComponent<XRBaseInteractable>();
             if (interactable != null)
             {
@@ -130,8 +125,6 @@ namespace App.Demos.DialogueDemo.Scripts
             if (mainCamera == null) return;
             
             float distance = Vector3.Distance(transform.position, mainCamera.transform.position);
-            
-            // Default proximity distance (can be made configurable)
             float proximityDistance = 2f;
             
             if (distance < proximityDistance)
@@ -142,8 +135,6 @@ namespace App.Demos.DialogueDemo.Scripts
 
         private bool IsPlayer(Collider collider)
         {
-            // Check if collider belongs to player
-            // This can be customized based on your player setup
             return collider.CompareTag("Player") || 
                    collider.GetComponentInParent<Camera>() != null ||
                    collider.name.Contains("Hand") ||
@@ -160,7 +151,6 @@ namespace App.Demos.DialogueDemo.Scripts
             
             hasTriggered = true;
             
-            // Show the prompt
             if (customDuration > 0)
             {
                 PromptManager.ShowPrompt(promptMessage, customDuration);
@@ -183,7 +173,6 @@ namespace App.Demos.DialogueDemo.Scripts
 
         private void OnDestroy()
         {
-            // Clean up event listeners
             var interactable = GetComponent<XRBaseInteractable>();
             if (interactable != null)
             {
@@ -193,20 +182,11 @@ namespace App.Demos.DialogueDemo.Scripts
 
         private void OnDrawGizmosSelected()
         {
-            // Draw proximity radius for proximity triggers
             if (triggerType == TriggerType.OnProximity)
             {
                 Gizmos.color = new Color(0, 1, 0, 0.3f);
-                Gizmos.DrawWireSphere(transform.position, 2f); // Default proximity distance
+                Gizmos.DrawWireSphere(transform.position, 2f);
             }
         }
-
-#if UNITY_EDITOR
-        [ContextMenu("Trigger Prompt Now")]
-        private void TriggerPromptNow()
-        {
-            TriggerPrompt();
-        }
-#endif
     }
 }

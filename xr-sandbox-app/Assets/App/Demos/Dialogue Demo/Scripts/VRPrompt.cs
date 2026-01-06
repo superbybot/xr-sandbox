@@ -19,17 +19,11 @@ namespace App.Demos.DialogueDemo.Scripts
         [SerializeField] private float displayDuration = 3f;
         [SerializeField] private float fadeDuration = 0.5f;
         
-        // [Header("Character Attachment (Optional)")]
-        // [Tooltip("Enable this to attach prompt to a character instead of showing to user")]
-        // [SerializeField] private bool attachToCharacter = false;
-        // [SerializeField] private Transform characterAttachPoint;
-        
         private bool isShowing = false;
         private float timeLastDisplayed;
 
         private void Awake()
         {
-            // Auto-find references if not set
             if (promptText == null)
                 promptText = GetComponentInChildren<TextMeshProUGUI>();
             
@@ -39,25 +33,14 @@ namespace App.Demos.DialogueDemo.Scripts
             if (floatingText == null)
                 floatingText = GetComponent<FloatingText>();
             
-            // Start hidden
             if (canvasGroup != null)
             {
                 canvasGroup.alpha = 0;
             }
         }
 
-        private void Start()
-        {
-            // Uncomment to enable character attachment
-            // if (attachToCharacter && characterAttachPoint != null && floatingText != null)
-            // {
-            //     floatingText.SetTarget(characterAttachPoint);
-            // }
-        }
-
         private void Update()
         {
-            // Auto-hide after duration
             if (isShowing && Time.time - timeLastDisplayed > displayDuration)
             {
                 HidePromptAsync().Forget();
@@ -75,19 +58,16 @@ namespace App.Demos.DialogueDemo.Scripts
                 return;
             }
             
-            // Set text
             if (promptText != null)
             {
                 promptText.text = message;
             }
             
-            // Update position immediately
             if (floatingText != null)
             {
                 floatingText.SyncPosition();
             }
             
-            // Fade in
             isShowing = true;
             timeLastDisplayed = Time.time;
             
@@ -96,7 +76,6 @@ namespace App.Demos.DialogueDemo.Scripts
                 await FadeToAsync(1f, fadeDuration);
             }
             
-            // Wait for display duration if custom duration provided
             if (customDuration.HasValue)
             {
                 await UniTask.WaitForSeconds(customDuration.Value);
@@ -164,46 +143,5 @@ namespace App.Demos.DialogueDemo.Scripts
             
             canvasGroup.alpha = targetAlpha;
         }
-
-        // Uncomment to enable character attachment feature
-        // /// <summary>
-        // /// Attach this prompt to a character's position
-        // /// </summary>
-        // public void AttachToCharacter(Transform characterTransform)
-        // {
-        //     if (floatingText != null && characterTransform != null)
-        //     {
-        //         floatingText.SetTarget(characterTransform);
-        //         attachToCharacter = true;
-        //         characterAttachPoint = characterTransform;
-        //     }
-        // }
-        
-        // /// <summary>
-        // /// Detach from character and return to user-facing mode
-        // /// </summary>
-        // public void DetachFromCharacter()
-        // {
-        //     if (floatingText != null)
-        //     {
-        //         floatingText.ClearTarget();
-        //         attachToCharacter = false;
-        //         characterAttachPoint = null;
-        //     }
-        // }
-
-#if UNITY_EDITOR
-        [ContextMenu("Test Show Prompt")]
-        private void TestShowPrompt()
-        {
-            ShowPrompt("This is a test prompt!");
-        }
-
-        [ContextMenu("Test Hide Prompt")]
-        private void TestHidePrompt()
-        {
-            HidePromptAsync().Forget();
-        }
-#endif
     }
 }

@@ -17,7 +17,6 @@ namespace App.Demos.DialogueDemo.Examples
 
         private void Update()
         {
-            // Inspector test buttons
             if (testBasicPrompt)
             {
                 testBasicPrompt = false;
@@ -43,8 +42,6 @@ namespace App.Demos.DialogueDemo.Examples
             }
         }
 
-        // ==================== BASIC USAGE ====================
-
         /// <summary>
         /// Example 1: Show a simple prompt with default duration (3 seconds)
         /// </summary>
@@ -69,8 +66,6 @@ namespace App.Demos.DialogueDemo.Examples
             PromptManager.HidePrompt();
         }
 
-        // ==================== SEQUENTIAL PROMPTS ====================
-
         /// <summary>
         /// Example 4: Show multiple prompts in sequence (queue system)
         /// </summary>
@@ -79,7 +74,6 @@ namespace App.Demos.DialogueDemo.Examples
             PromptManager.ShowPrompt("First prompt", 2f);
             PromptManager.ShowPrompt("Second prompt", 2f);
             PromptManager.ShowPrompt("Third prompt", 2f);
-            // These will display one after another automatically
         }
 
         /// <summary>
@@ -93,8 +87,6 @@ namespace App.Demos.DialogueDemo.Examples
             PromptManager.ShowPrompt("Step 3: Grab objects", 3f);
             PromptManager.ShowPrompt("Tutorial complete!", 4f);
         }
-
-        // ==================== GAME EVENTS ====================
 
         /// <summary>
         /// Example 6: Show prompt when player enters an area
@@ -128,8 +120,6 @@ namespace App.Demos.DialogueDemo.Examples
             PromptManager.ShowPrompt($"🎉 Achievement Unlocked: {achievementName}", 5f);
         }
 
-        // ==================== CONTEXTUAL HINTS ====================
-
         /// <summary>
         /// Example 10: Show hint when player looks at an object
         /// </summary>
@@ -154,8 +144,6 @@ namespace App.Demos.DialogueDemo.Examples
             PromptManager.ShowPrompt("❌ Cannot do that here", 2f);
         }
 
-        // ==================== QUEUE MANAGEMENT ====================
-
         /// <summary>
         /// Example 13: Clear all queued prompts
         /// </summary>
@@ -174,8 +162,6 @@ namespace App.Demos.DialogueDemo.Examples
             bool isShowing = PromptManager.IsShowingPrompt();
             Debug.Log($"Prompt is showing: {isShowing}");
         }
-
-        // ==================== ADVANCED USAGE ====================
 
         /// <summary>
         /// Example 15: Conditional prompt based on game state
@@ -197,7 +183,7 @@ namespace App.Demos.DialogueDemo.Examples
         /// </summary>
         public void Example_TimedReminder()
         {
-            Invoke(nameof(ShowReminder), 30f); // Show after 30 seconds
+            Invoke(nameof(ShowReminder), 30f);
         }
 
         private void ShowReminder()
@@ -212,8 +198,6 @@ namespace App.Demos.DialogueDemo.Examples
         {
             PromptManager.ShowPrompt($"Score: {score} | Coins: {coinsCollected}", 2f);
         }
-
-        // ==================== UNITY EVENTS ====================
 
         /// <summary>
         /// Example 18: Can be called from Unity Events (buttons, triggers, etc.)
@@ -233,41 +217,5 @@ namespace App.Demos.DialogueDemo.Examples
                 PromptManager.ShowPrompt("You entered the trigger zone", 2f);
             }
         }
-
-        /// <summary>
-        /// Example 20: Scene start message
-        /// </summary>
-        private void Start()
-        {
-            // Uncomment to show welcome message on scene start
-            // PromptManager.ShowPrompt("Welcome to the scene!", 3f);
-        }
-
-#if UNITY_EDITOR
-        // ==================== EDITOR TESTING ====================
-
-        [ContextMenu("Test All Examples")]
-        private void TestAllExamples()
-        {
-            Example_BasicPrompt();
-            Invoke(nameof(Example_CustomDuration), 3.5f);
-            Invoke(nameof(Example_SequentialPrompts), 9f);
-        }
-
-        [ContextMenu("Test Tutorial")]
-        private void TestTutorial()
-        {
-            Example_Tutorial();
-        }
-
-        [ContextMenu("Test Game Events")]
-        private void TestGameEvents()
-        {
-            OnPlayerEnterDangerZone();
-            Invoke(() => OnItemPickup("Health Potion"), 3.5f);
-            Invoke(() => OnObjectiveComplete("Find the Key"), 7f);
-            Invoke(() => OnAchievementUnlocked("First Steps"), 11f);
-        }
-#endif
     }
 }

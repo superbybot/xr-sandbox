@@ -12,13 +12,14 @@ namespace App.Demos.DialogueDemo.Scripts
     {
         public static PromptManager Instance { get; private set; }
 
-        [Header("References")]
-        [SerializeField] private VRPrompt defaultPrompt;
+        [Header("Prefab")]
+        [SerializeField] private GameObject vrPromptPrefab;
         
         [Header("Queue Settings")]
         [SerializeField] private bool useQueue = true;
         [SerializeField] private float delayBetweenPrompts = 0.5f;
         
+        private VRPrompt defaultPrompt;
         private Queue<PromptData> promptQueue = new Queue<PromptData>();
         private bool isProcessingQueue = false;
 
@@ -30,7 +31,6 @@ namespace App.Demos.DialogueDemo.Scripts
 
         private void Awake()
         {
-            // Singleton pattern
             if (Instance != null && Instance != this)
             {
                 Debug.LogWarning("PromptManager: Multiple instances detected. Destroying duplicate.");
@@ -40,17 +40,19 @@ namespace App.Demos.DialogueDemo.Scripts
             
             Instance = this;
             
-            // Optional: Don't destroy on load if you want it to persist across scenes
-            // DontDestroyOnLoad(gameObject);
-            
-            // Validate references
-            if (defaultPrompt == null)
+            if (vrPromptPrefab != null)
             {
-                defaultPrompt = GetComponentInChildren<VRPrompt>();
+                GameObject promptObj = Instantiate(vrPromptPrefab, transform);
+                defaultPrompt = promptObj.GetComponent<VRPrompt>();
+                
                 if (defaultPrompt == null)
                 {
-                    Debug.LogError("PromptManager: No VRPrompt found! Please assign a default prompt.");
+                    Debug.LogError("PromptManager: VRPrompt prefab does not have a VRPrompt component!");
                 }
+            }
+            else
+            {
+                Debug.LogError("PromptManager: No VRPrompt prefab assigned!");
             }
         }
 
@@ -110,10 +112,8 @@ namespace App.Demos.DialogueDemo.Scripts
 
             if (useQueue)
             {
-                // Add to queue
                 promptQueue.Enqueue(new PromptData { message = message, duration = duration });
                 
-                // Start processing if not already running
                 if (!isProcessingQueue)
                 {
                     ProcessQueueAsync().Forget();
@@ -121,7 +121,6 @@ namespace App.Demos.DialogueDemo.Scripts
             }
             else
             {
-                // Show immediately, interrupting current prompt
                 defaultPrompt.ShowPrompt(message, duration);
             }
         }
@@ -134,21 +133,16 @@ namespace App.Demos.DialogueDemo.Scripts
             {
                 var promptData = promptQueue.Dequeue();
                 
-                // Show the prompt and wait for it to complete
                 await defaultPrompt.ShowPromptAsync(promptData.message, promptData.duration);
                 
-                // Wait for the prompt to finish displaying
                 if (promptData.duration.HasValue)
                 {
-                    // Duration is handled in ShowPromptAsync
                 }
                 else
                 {
-                    // Wait for default duration + fade time
                     await UniTask.WaitWhile(() => defaultPrompt.IsShowing());
                 }
                 
-                // Small delay between prompts
                 if (promptQueue.Count > 0)
                 {
                     await UniTask.WaitForSeconds(delayBetweenPrompts);
@@ -173,27 +167,5 @@ namespace App.Demos.DialogueDemo.Scripts
         {
             return Instance?.defaultPrompt != null && Instance.defaultPrompt.IsShowing();
         }
-
-#if UNITY_EDITOR
-        [ContextMenu("Test Show Prompt")]
-        private void TestShowPrompt()
-        {
-            ShowPrompt("Test prompt from PromptManager!");
-        }
-
-        [ContextMenu("Test Queue Multiple Prompts")]
-        private void TestQueuePrompts()
-        {
-            ShowPrompt("First prompt");
-            ShowPrompt("Second prompt");
-            ShowPrompt("Third prompt");
-        }
-
-        [ContextMenu("Test Clear Queue")]
-        private void TestClearQueue()
-        {
-            ClearQueue();
-        }
-#endif
     }
 }

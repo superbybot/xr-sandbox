@@ -56,7 +56,6 @@ namespace App.Demos.DialogueDemo.Scripts
             if (enableDebugLogs)
                 Debug.Log("DialogueDemoController: Starting tutorial sequence");
             
-            // These will queue and display one after another
             PromptManager.ShowPrompt("Tutorial Step 1: Look around the environment", 3f);
             PromptManager.ShowPrompt("Tutorial Step 2: Find the colored cubes", 3f);
             PromptManager.ShowPrompt("Tutorial Step 3: Try touching or grabbing them", 3f);
@@ -66,7 +65,6 @@ namespace App.Demos.DialogueDemo.Scripts
 
         /// <summary>
         /// Example: Show a contextual prompt based on player action
-        /// Call this from other scripts or Unity Events
         /// </summary>
         public void OnPlayerCompletedAction(string actionName)
         {
@@ -99,7 +97,7 @@ namespace App.Demos.DialogueDemo.Scripts
         }
 
         /// <summary>
-        /// Clear all queued prompts (emergency stop)
+        /// Clear all queued prompts
         /// </summary>
         public void ClearAllPrompts()
         {
@@ -117,43 +115,5 @@ namespace App.Demos.DialogueDemo.Scripts
         {
             return PromptManager.IsShowingPrompt();
         }
-
-#if UNITY_EDITOR
-        [ContextMenu("Test Welcome Message")]
-        private void TestWelcome()
-        {
-            ShowWelcomeMessageAsync().Forget();
-        }
-
-        [ContextMenu("Test Tutorial Sequence")]
-        private void TestTutorial()
-        {
-            StartTutorialAsync().Forget();
-        }
-
-        [ContextMenu("Test Action Complete")]
-        private void TestActionComplete()
-        {
-            OnPlayerCompletedAction("Test Action");
-        }
-
-        [ContextMenu("Test Warning")]
-        private void TestWarning()
-        {
-            ShowWarning("This is a test warning!");
-        }
-
-        [ContextMenu("Test Achievement")]
-        private void TestAchievement()
-        {
-            ShowAchievement("First Steps");
-        }
-
-        [ContextMenu("Clear All Prompts")]
-        private void TestClearAll()
-        {
-            ClearAllPrompts();
-        }
-#endif
     }
 }
