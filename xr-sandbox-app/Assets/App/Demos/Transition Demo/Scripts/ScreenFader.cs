@@ -5,10 +5,6 @@ using UnityEngine.Rendering.Universal;
 
 namespace App.Demos.TransitionDemo.Scripts
 {
-    /// <summary>
-    /// Controls screen fade transitions using Post-Processing Volume.
-    /// Inspired by NorthStar's ScreenFader, adapted to use UniTask and ColorAdjustments.
-    /// </summary>
     public class ScreenFader : MonoBehaviour
     {
         [Header("Volume Reference")]
@@ -19,38 +15,36 @@ namespace App.Demos.TransitionDemo.Scripts
         [SerializeField] private float fadeToBlackValue = -10f;
         [SerializeField] private float fadeToWhiteValue = 10f;
         
-        [Header("Debug")]
-        [SerializeField] private bool enableDebugLogs = false;
-        
-        // Multiple fade values that combine (similar to NorthStar)
         public float ManualFadeValue { get; private set; }
         public float TeleportFadeValue { get; private set; }
         public float TimedFadeValue { get; private set; }
         
         private ColorAdjustments colorAdjustments;
-        
-        // Singleton pattern
-        public static ScreenFader Instance { get; private set; }
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
+            Debug.Log($"[ScreenFader] Awake - fadeVolume: {fadeVolume}");
+            
+            if (fadeVolume == null)
             {
-                Debug.LogWarning("Multiple ScreenFader instances found. Destroying duplicate.");
-                Destroy(gameObject);
+                Debug.LogError("[ScreenFader] fadeVolume is NULL! Assign it in Inspector.");
                 return;
             }
             
-            Instance = this;
+            if (fadeVolume.profile == null)
+            {
+                Debug.LogError("[ScreenFader] fadeVolume.profile is NULL! Assign a Volume Profile.");
+                return;
+            }
             
-            // Get ColorAdjustments from the volume profile
-            if (fadeVolume != null && fadeVolume.profile.TryGet(out ColorAdjustments ca))
+            if (fadeVolume.profile.TryGet(out ColorAdjustments ca))
             {
                 colorAdjustments = ca;
+                Debug.Log($"[ScreenFader] ColorAdjustments found. postExposure override: {ca.postExposure.overrideState}");
             }
             else
             {
-                Debug.LogError("ScreenFader: Volume Profile must have ColorAdjustments override!");
+                Debug.LogError("[ScreenFader] Volume Profile must have ColorAdjustments override!");
             }
         }
 
@@ -58,85 +52,55 @@ namespace App.Demos.TransitionDemo.Scripts
         {
             if (fadeVolume == null || colorAdjustments == null) return;
             
-            // Combine all fade values (similar to NorthStar)
             float totalFade = ManualFadeValue + TeleportFadeValue + TimedFadeValue;
+            float newWeight = Mathf.Abs(totalFade) > 0.01f ? 1f : 0f;
             
-            // Set the volume weight based on fade intensity
-            // Weight 0 = disabled (performance optimization)
-            // Weight 1 = fully active
-            fadeVolume.weight = Mathf.Abs(totalFade) > 0.01f ? 1f : 0f;
+            if (Mathf.Abs(fadeVolume.weight - newWeight) > 0.01f || Mathf.Abs(colorAdjustments.postExposure.value - totalFade) > 0.1f)
+            {
+                Debug.Log($"[ScreenFader] Update - totalFade: {totalFade:F2}, weight: {newWeight}, postExposure: {totalFade:F2}");
+            }
             
-            // Set the postExposure value
+            fadeVolume.weight = newWeight;
             colorAdjustments.postExposure.value = totalFade;
         }
 
         #region Async Methods
 
-        /// <summary>
-        /// Fade to black (async)
-        /// </summary>
         public async UniTask FadeToBlackAsync(float duration = -1f)
         {
             if (duration < 0) duration = defaultFadeDuration;
-            
-            if (enableDebugLogs)
-                Debug.Log($"ScreenFader: Fading to black over {duration}s");
-            
+            Debug.Log($"[ScreenFader] FadeToBlackAsync started - duration: {duration}s, target: {fadeToBlackValue}");
             await FadeManualAsync(fadeToBlackValue, duration);
+            Debug.Log("[ScreenFader] FadeToBlackAsync completed");
         }
 
-        /// <summary>
-        /// Fade to clear/normal (async)
-        /// </summary>
         public async UniTask FadeToClearAsync(float duration = -1f)
         {
             if (duration < 0) duration = defaultFadeDuration;
-            
-            if (enableDebugLogs)
-                Debug.Log($"ScreenFader: Fading to clear over {duration}s");
-            
+            Debug.Log($"[ScreenFader] FadeToClearAsync started - duration: {duration}s, target: 0");
             await FadeManualAsync(0f, duration);
+            Debug.Log("[ScreenFader] FadeToClearAsync completed");
         }
 
-        /// <summary>
-        /// Fade to white (async)
-        /// </summary>
         public async UniTask FadeToWhiteAsync(float duration = -1f)
         {
             if (duration < 0) duration = defaultFadeDuration;
-            
-            if (enableDebugLogs)
-                Debug.Log($"ScreenFader: Fading to white over {duration}s");
-            
             await FadeManualAsync(fadeToWhiteValue, duration);
         }
 
-        /// <summary>
-        /// Fade out, hold, then fade in (async)
-        /// Useful for teleports and scene transitions
-        /// </summary>
         public async UniTask FadeOutAndInAsync(float fadeOutDuration = -1f, float holdDuration = 0.1f, float fadeInDuration = -1f)
         {
             if (fadeOutDuration < 0) fadeOutDuration = defaultFadeDuration;
             if (fadeInDuration < 0) fadeInDuration = defaultFadeDuration;
             
-            if (enableDebugLogs)
-                Debug.Log($"ScreenFader: Fade out/in sequence - Out:{fadeOutDuration}s Hold:{holdDuration}s In:{fadeInDuration}s");
-            
-            // Fade to black
             await FadeToBlackAsync(fadeOutDuration);
             
-            // Hold
             if (holdDuration > 0)
                 await UniTask.WaitForSeconds(holdDuration);
             
-            // Fade back to clear
             await FadeToClearAsync(fadeInDuration);
         }
 
-        /// <summary>
-        /// Fade manual value to target over duration
-        /// </summary>
         private async UniTask FadeManualAsync(float targetValue, float duration)
         {
             float startValue = ManualFadeValue;
@@ -157,33 +121,21 @@ namespace App.Demos.TransitionDemo.Scripts
 
         #region Fire-and-Forget Methods
 
-        /// <summary>
-        /// Fade to black (fire and forget)
-        /// </summary>
         public void FadeToBlack(float duration = -1f)
         {
             FadeToBlackAsync(duration).Forget();
         }
 
-        /// <summary>
-        /// Fade to clear (fire and forget)
-        /// </summary>
         public void FadeToClear(float duration = -1f)
         {
             FadeToClearAsync(duration).Forget();
         }
 
-        /// <summary>
-        /// Fade to white (fire and forget)
-        /// </summary>
         public void FadeToWhite(float duration = -1f)
         {
             FadeToWhiteAsync(duration).Forget();
         }
 
-        /// <summary>
-        /// Fade out and in (fire and forget)
-        /// </summary>
         public void FadeOutAndIn(float fadeOutDuration = -1f, float holdDuration = 0.1f, float fadeInDuration = -1f)
         {
             FadeOutAndInAsync(fadeOutDuration, holdDuration, fadeInDuration).Forget();
@@ -193,43 +145,28 @@ namespace App.Demos.TransitionDemo.Scripts
 
         #region Instant Methods
 
-        /// <summary>
-        /// Set fade value immediately without animation
-        /// </summary>
         public void SetFadeImmediate(float fadeValue)
         {
+            Debug.Log($"[ScreenFader] SetFadeImmediate - value: {fadeValue}");
             ManualFadeValue = fadeValue;
-            
-            if (enableDebugLogs)
-                Debug.Log($"ScreenFader: Set fade immediate to {fadeValue}");
         }
 
-        /// <summary>
-        /// Clear all fade immediately
-        /// </summary>
         public void ClearFadeImmediate()
         {
             ManualFadeValue = 0f;
             TeleportFadeValue = 0f;
             TimedFadeValue = 0f;
-            
-            if (enableDebugLogs)
-                Debug.Log("ScreenFader: Cleared all fades immediately");
         }
 
         #endregion
 
-        #region Teleport Fade Methods (for integration with teleport systems)
+        #region Teleport Fade Methods
 
-        /// <summary>
-        /// Fade for teleport (uses separate fade value)
-        /// </summary>
         public async UniTask TeleportFadeAsync(float fadeOutDuration = 0.3f, float holdDuration = 0.1f, float fadeInDuration = 0.3f)
         {
             float startValue = TeleportFadeValue;
             float elapsed = 0f;
             
-            // Fade out
             while (elapsed < fadeOutDuration)
             {
                 elapsed += Time.deltaTime;
@@ -240,11 +177,9 @@ namespace App.Demos.TransitionDemo.Scripts
             
             TeleportFadeValue = fadeToBlackValue;
             
-            // Hold
             if (holdDuration > 0)
                 await UniTask.WaitForSeconds(holdDuration);
             
-            // Fade in
             elapsed = 0f;
             while (elapsed < fadeInDuration)
             {
@@ -259,7 +194,7 @@ namespace App.Demos.TransitionDemo.Scripts
 
         #endregion
 
-        #region Context Menu (for testing in editor)
+        #region Context Menu
 
         [ContextMenu("Test: Fade to Black")]
         private void TestFadeToBlack()

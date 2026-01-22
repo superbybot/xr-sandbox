@@ -7,41 +7,24 @@ Simple VR screen fade system using Post-Processing Volumes for guaranteed full-s
 ## Core Scripts
 
 ### ScreenFader.cs
-Main fade controller (Singleton)
+Main fade controller
 
 **Key Methods:**
 ```csharp
 // Async
-await ScreenFader.Instance.FadeToBlackAsync(duration);
-await ScreenFader.Instance.FadeToClearAsync(duration);
-await ScreenFader.Instance.FadeToWhiteAsync(duration);
-await ScreenFader.Instance.FadeOutAndInAsync(fadeOut, hold, fadeIn);
+await screenFader.FadeToBlackAsync(duration);
+await screenFader.FadeToClearAsync(duration);
+await screenFader.FadeToWhiteAsync(duration);
+await screenFader.FadeOutAndInAsync(fadeOut, hold, fadeIn);
 
 // Fire-and-forget
-ScreenFader.Instance.FadeToBlack(duration);
-ScreenFader.Instance.FadeToClear(duration);
+screenFader.FadeToBlack(duration);
+screenFader.FadeToClear(duration);
 
 // Instant
-ScreenFader.Instance.SetFadeImmediate(fadeValue);
-ScreenFader.Instance.ClearFadeImmediate();
+screenFader.SetFadeImmediate(fadeValue);
+screenFader.ClearFadeImmediate();
 ```
-
-### TransitionTrigger.cs
-Event-based fade triggers
-
-**Trigger Types:**
-- `OnStart` - Fade on scene start
-- `OnCollision` - Fade when player touches
-- `OnInteraction` - Fade when grabbed/interacted
-- `OnProximity` - Fade when player enters area
-- `Timed` - Fade after delay
-- `Manual` - Call `TriggerFade()` from code
-
-**Fade Types:**
-- `FadeOut` - Fade to black
-- `FadeIn` - Fade to clear
-- `FadeOutAndIn` - Fade out, hold, fade in
-- `FadeToWhite` - Flashbang effect
 
 ### TransitionDemoController.cs
 Demo controller with example sequences
@@ -59,7 +42,6 @@ Demo controller with example sequences
 3. Name it `FadeVolumeProfile`
 4. Add Override → Post-processing → Color Adjustments
 5. Set Post Exposure to 0
-6. Disable all other overrides
 
 ### 2. Create ScreenFadeVolume Prefab
 1. Create empty GameObject, name it `ScreenFadeVolume`
@@ -82,54 +64,47 @@ Demo controller with example sequences
 ### 4. Add Demo Controller (Optional)
 1. Select ScreenFadeVolume
 2. Add Component → TransitionDemoController
-3. Configure welcome sequence settings
-
-### 5. Create Example Triggers
-See SCENE_SETUP.md for detailed trigger examples
+3. **Drag ScreenFader component to the Screen Fader field**
+4. Configure welcome sequence settings
 
 ## Common Use Cases
 
 ### Teleport with Fade
 ```csharp
-await ScreenFader.Instance.FadeOutAndInAsync(0.5f, 0.1f, 0.5f);
+await screenFader.FadeOutAndInAsync(0.5f, 0.1f, 0.5f);
 // Move player during the hold period
 ```
 
 ### Scene Transition
 ```csharp
-await ScreenFader.Instance.FadeToBlackAsync(1.5f);
+await screenFader.FadeToBlackAsync(1.5f);
 // Load new scene
-await ScreenFader.Instance.FadeToClearAsync(1.5f);
+await screenFader.FadeToClearAsync(1.5f);
 ```
 
 ### Death/Respawn
 ```csharp
-await ScreenFader.Instance.FadeToBlackAsync(0.5f);
+await screenFader.FadeToBlackAsync(0.5f);
 await UniTask.WaitForSeconds(1f);
-await ScreenFader.Instance.FadeToClearAsync(1f);
+await screenFader.FadeToClearAsync(1f);
 ```
 
 ### Flashbang Effect
 ```csharp
-ScreenFader.Instance.SetFadeImmediate(10f); // Instant white
-await ScreenFader.Instance.FadeToClearAsync(2f);
+screenFader.SetFadeImmediate(10f); // Instant white
+await screenFader.FadeToClearAsync(2f);
 ```
 
 ## Troubleshooting
 
 **Fade not working:**
-- Check ScreenFader.Instance is not null
+- Check ScreenFader reference is assigned
 - Verify Volume Profile has ColorAdjustments override
 - Check Volume component is on same GameObject as ScreenFader
 
 **Gaps in VR peripheral vision:**
 - This shouldn't happen with Post-Processing Volume approach
 - If it does, increase fadeToBlackValue (make more negative)
-
-**Performance issues:**
-- Volume weight automatically sets to 0 when not fading
-- Disable other Volume overrides you don't need
-- Check only one ScreenFadeVolume exists in scene
 
 ## Testing
 
@@ -140,5 +115,4 @@ await ScreenFader.Instance.FadeToClearAsync(2f);
 **In VR:**
 - Build to headset
 - Verify full peripheral coverage
-- Test all trigger types
 - Monitor frame rate during fades

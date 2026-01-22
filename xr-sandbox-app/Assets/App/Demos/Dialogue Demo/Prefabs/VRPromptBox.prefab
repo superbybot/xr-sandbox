@@ -75,7 +75,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1200, y: 300}
+  m_SizeDelta: {x: 1500, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3489729194480005686
 MonoBehaviour:
@@ -111,6 +111,8 @@ MonoBehaviour:
   offset: {x: 0, y: -1, z: 0}
   fixedSize: 0.000002
   maxDistance: 50
+  positionSmoothSpeed: 5
+  rotationSmoothSpeed: 8
   canvas: {fileID: 7926753191776905267}
 --- !u!223 &7926753191776905267
 Canvas:
@@ -204,7 +206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: ddc892ac4c6a94544b474a6ba0be6f87, type: 2}
   m_Color: {r: 0, g: 0, b: 0, a: 0.78431374}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -325,6 +327,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
