@@ -102,3 +102,5 @@ xr-sandbox-app/Temp/
 xr-sandbox-app/Library/
 xr-sandbox-app/.idea/
 xr-sandbox-app/obj/
+xr-sandbox-app/Assets/_Recovery/
+xr-sandbox-app/Assets/_Recovery.meta
