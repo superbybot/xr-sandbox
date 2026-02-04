@@ -1,4 +1,4 @@
-using App.Demos.Car_Demo.Scripts.Interactable;
+using App.Shared.Scripts.Interfaces;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,8 +11,12 @@ namespace App.Demos.CarDemo.Scripts
         [SerializeField] private CarTeleportAnchor teleportAnchor;
         
         [Header("Inputs")]
-        [SerializeField] private XRSteeringWheel steeringWheel;
-        [SerializeField] private XRJoystick joystick;
+        [Tooltip("Object implementing IVehicleInput (e.g., MetaSteeringWheel)")]
+        [SerializeField] private MonoBehaviour steeringInputSource;
+        
+        [Tooltip("Object implementing IVehicleInput (e.g., MetaJoystick)")]
+        [SerializeField] private MonoBehaviour throttleInputSource;
+        
         [SerializeField] private InputActionReference exitAction;
 
         private bool _isSeated = false;
@@ -81,27 +85,17 @@ namespace App.Demos.CarDemo.Scripts
             float acceleration = 0f;
             float brake = 0f;
 
-            if (steeringWheel != null)
+            // Read Steering (Invert to match original logic if needed)
+            if (steeringInputSource is IVehicleInput sInput)
             {
-                steering = -steeringWheel.Value; 
+                steering = -sInput.Steering; 
             }
 
-            if (joystick != null)
+            // Read Throttle/Brake
+            if (throttleInputSource is IVehicleInput tInput)
             {
-                Vector2 input = joystick.Value;
-
-                if (input.y > 0)
-                {
-                    acceleration = input.y;
-                }
-                else if (input.y < -0.9f) // Full reverse when joystick is nearly fully back
-                {
-                    acceleration = input.y; // Negative acceleration = reverse
-                }
-                else if (input.y < 0)
-                {
-                    brake = -input.y;
-                }
+                acceleration = tInput.Throttle;
+                brake = tInput.Brake;
             }
 
             debugSteering = steering;
