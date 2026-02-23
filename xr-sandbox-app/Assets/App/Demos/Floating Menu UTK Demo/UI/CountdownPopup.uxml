@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="UnityEngine.UIElements ../../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <ui:Style src="CountdownPopup.uss" />
+    <ui:VisualElement name="countdown-container" class="countdown-container">
+        <ui:Label name="countdown-label" text="3" class="countdown-text" />
+    </ui:VisualElement>
+</ui:UXML>

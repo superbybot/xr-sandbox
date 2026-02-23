@@ -19,10 +19,14 @@ namespace FloatingMenuDemo
         [Header("Input")]
         [SerializeField] private UnityEngine.InputSystem.InputActionProperty menuToggleAction;
 
+        [Header("Countdown")]
+        [SerializeField] private CountdownControllerUTK countdownController;
+
         private bool isMenuVisible = false;
         private Coroutine fadeCoroutine;
         private Transform mainCameraTransform;
         private VisualElement root;
+        private Button startCountdownButton;
 
         private void Awake()
         {
@@ -40,11 +44,30 @@ namespace FloatingMenuDemo
                 {
                     root.style.opacity = 0f;
                     root.style.display = DisplayStyle.None;
+
+                    startCountdownButton = root.Q<Button>("start-countdown-button");
+                    if (startCountdownButton != null)
+                    {
+                        startCountdownButton.clicked += HandleStartCountdown;
+                    }
                 }
             }
             else
             {
                 Debug.LogError("[FloatingMenuManagerUTK] UIDocument NOT assigned!");
+            }
+        }
+
+        private void HandleStartCountdown()
+        {
+            if (countdownController != null)
+            {
+                HideMenu();
+                countdownController.StartCountdown();
+            }
+            else
+            {
+                Debug.LogWarning("[FloatingMenuManagerUTK] CountdownController NOT assigned!");
             }
         }
 
@@ -58,6 +81,14 @@ namespace FloatingMenuDemo
         {
             if (menuToggleAction.action != null)
                 menuToggleAction.action.Disable();
+        }
+
+        private void OnDestroy()
+        {
+            if (startCountdownButton != null)
+            {
+                startCountdownButton.clicked -= HandleStartCountdown;
+            }
         }
 
         private void Update()

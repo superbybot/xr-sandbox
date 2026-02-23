@@ -10,5 +10,6 @@
         </ui:VisualElement>
         <ui:VisualElement class="content-spacer" />
         <ui:Button text="CONFIRM" name="confirm-button" class="confirm-btn" />
+        <ui:Button text="START COUNTDOWN" name="start-countdown-button" class="countdown-btn" />
     </ui:VisualElement>
 </ui:UXML>
