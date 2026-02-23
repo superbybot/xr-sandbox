@@ -6,6 +6,7 @@
     "com.meta.xr.sdk.core": "85.0.0",
     "com.meta.xr.sdk.interaction": "85.0.0",
     "com.meta.xr.sdk.interaction.ovr": "85.0.0",
+    "com.meta.xr.sdk.movement": "https://github.com/oculus-samples/Unity-Movement.git#v83.0.0",
     "com.unity.animation.rigging": "1.4.1",
     "com.unity.cinemachine": "3.1.5",
     "com.unity.feature.development": "1.0.2",
