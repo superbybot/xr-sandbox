@@ -5,7 +5,7 @@ using App.Demos.RacingDemo.Scripts.Domain;
 using App.Demos.RacingDemo.Scripts.Domain.UseCases;
 using App.Demos.DialogueDemo.Scripts;
 using App.Demos.CarDemo.Scripts;
-using App.Shared.Scripts.Meta; // MetaCarTeleportAnchor
+
 
 namespace App.Demos.RacingDemo.Scripts.Presentation.Views
 {
@@ -17,14 +17,12 @@ namespace App.Demos.RacingDemo.Scripts.Presentation.Views
     public class RacingView : MonoBehaviour
     {
         [Header("Dependencies")]
-        [SerializeField] private MetaCarTeleportAnchor carAnchor;
+        [SerializeField] private CarTeleportAnchor carAnchor;
         
-        // Private State/Comparators
         private RacingState _state;
         // DEPENDENCY INVERSION: Relies on Interface, not Concrete Class
         private IStartRaceUseCase _startRaceUseCase;
 
-        // VContainer Injection
         [VContainer.Inject]
         public void Construct(RacingState state, IStartRaceUseCase startRaceUseCase)
         {
@@ -56,12 +54,10 @@ namespace App.Demos.RacingDemo.Scripts.Presentation.Views
 
         private void BindState()
         {
-            // React to Phase Changes
             _state.CurrentPhase
                 .Subscribe(OnPhaseChanged)
                 .AddTo(_disposables);
 
-            // React to Lap Changes
             _state.CurrentLap
                 .Where(lap => lap > 1) // Don't show for lap 1 start which is implicit
                 .Subscribe(lap => ShowLapMessage(lap))

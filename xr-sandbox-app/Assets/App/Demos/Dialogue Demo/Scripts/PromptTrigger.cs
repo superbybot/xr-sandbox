@@ -15,7 +15,7 @@ namespace App.Demos.DialogueDemo.Scripts
         
         [Header("Prompt Settings")]
         [SerializeField] private string promptMessage = "Hello from VR Prompt!";
-        [SerializeField] private float customDuration = 0f; // 0 = use default
+        [SerializeField] private float customDuration = 0f;
         [SerializeField] private bool triggerOnce = true;
         
         [Header("Timed Trigger Settings")]
@@ -36,8 +36,15 @@ namespace App.Demos.DialogueDemo.Scripts
             Manual
         }
 
+        private Camera mainCamera;
+
         private void Start()
         {
+            if (triggerType == TriggerType.OnProximity)
+            {
+                mainCamera = Camera.main;
+            }
+
             switch (triggerType)
             {
                 case TriggerType.OnStart:
@@ -121,8 +128,11 @@ namespace App.Demos.DialogueDemo.Scripts
 
         private void CheckProximity()
         {
-            Camera mainCamera = Camera.main;
-            if (mainCamera == null) return;
+            if (mainCamera == null)
+            {
+                mainCamera = Camera.main;
+                if (mainCamera == null) return;
+            }
             
             float distance = Vector3.Distance(transform.position, mainCamera.transform.position);
             float proximityDistance = 2f;

@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-using App.Shared.Scripts.Meta; // MetaCarTeleportAnchor
+
 using App.Demos.CarDemo.Scripts;
 using App.Demos.DialogueDemo.Scripts;
 using Cysharp.Threading.Tasks;
@@ -11,7 +11,7 @@ namespace App.Demos.RacingDemo.Scripts
     {
         // Configuration
         [SerializeField] private int totalLaps = 3;
-        [SerializeField] private MetaCarTeleportAnchor carTeleportAnchor;
+        [SerializeField] private CarTeleportAnchor carTeleportAnchor;
         [SerializeField] private CarInputManager carInputManager;
         [SerializeField] private RaceCountdown raceCountdown;
         
@@ -55,7 +55,7 @@ namespace App.Demos.RacingDemo.Scripts
             // If player enters car, CarInputManager usually enables input. 
             // We will need to disable it during countdown.
             
-            // If we are waiting for player, we don't do much.
+
         }
 
         private void HandleCarEnter()
@@ -68,16 +68,13 @@ namespace App.Demos.RacingDemo.Scripts
 
         private async UniTaskVoid StartRaceSequence()
         {
-            // Transition to Countdown
             currentState = RaceState.Countdown;
             
-            // Disable car input
             if (carInputManager != null)
             {
                 carInputManager.enabled = false;
             }
             
-            // Start Countdown
             if (raceCountdown != null)
             {
                 await raceCountdown.StartCountdownAsync();
@@ -88,7 +85,6 @@ namespace App.Demos.RacingDemo.Scripts
                 await UniTask.WaitForSeconds(3f);
             }
             
-            // Start Racing
             StartRacing();
         }
 
@@ -97,7 +93,6 @@ namespace App.Demos.RacingDemo.Scripts
             currentState = RaceState.Racing;
             currentLap = 0; // Or 1? Usually 0 completed laps.
             
-            // Enable car input
             if (carInputManager != null)
             {
                 carInputManager.enabled = true;

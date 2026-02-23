@@ -25,7 +25,7 @@ public class IKTargetFollowVRRig : MonoBehaviour
     public Vector3 headBodyPositionOffset;
     public float headBodyYawOffset;
 
-    // Update is called once per frame
+
     void LateUpdate()
     {
         transform.position = head.ikTarget.position + headBodyPositionOffset;

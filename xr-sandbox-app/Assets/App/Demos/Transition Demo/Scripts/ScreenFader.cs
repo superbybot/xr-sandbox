@@ -1,67 +1,71 @@
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 
 namespace App.Demos.TransitionDemo.Scripts
 {
     public class ScreenFader : MonoBehaviour
     {
-        [Header("Volume Reference")]
-        [SerializeField] private Volume fadeVolume;
-        
         [Header("Fade Settings")]
         [SerializeField] private float defaultFadeDuration = 1.0f;
-        [SerializeField] private float fadeToBlackValue = -10f;
-        [SerializeField] private float fadeToWhiteValue = 10f;
+        [SerializeField] private Color fadeColor = new Color(0.01f, 0.01f, 0.01f, 1.0f);
         
         public float ManualFadeValue { get; private set; }
         public float TeleportFadeValue { get; private set; }
         public float TimedFadeValue { get; private set; }
         
-        private ColorAdjustments colorAdjustments;
+        private OVRScreenFade ovrScreenFade;
 
         private void Awake()
         {
-            Debug.Log($"[ScreenFader] Awake - fadeVolume: {fadeVolume}");
+            SetupOVRScreenFade();
+        }
+
+        private void SetupOVRScreenFade()
+        {
+            ovrScreenFade = FindFirstObjectByType<OVRScreenFade>();
             
-            if (fadeVolume == null)
+            // Find the active camera to parent the fader to
+            Camera mainCam = Camera.main;
+            if (mainCam == null) mainCam = FindFirstObjectByType<Camera>();
+
+            if (ovrScreenFade == null)
             {
-                Debug.LogError("[ScreenFader] fadeVolume is NULL! Assign it in Inspector.");
-                return;
+                // Create it if it doesn't exist
+                GameObject faderObj = new GameObject("OVRScreenFade_Runtime");
+                ovrScreenFade = faderObj.AddComponent<OVRScreenFade>();
+                Debug.Log("[ScreenFader] OVRScreenFade created at runtime.");
             }
-            
-            if (fadeVolume.profile == null)
+
+            // FORCE PARENTING to the camera so it follows the head
+            if (mainCam != null)
             {
-                Debug.LogError("[ScreenFader] fadeVolume.profile is NULL! Assign a Volume Profile.");
-                return;
-            }
-            
-            if (fadeVolume.profile.TryGet(out ColorAdjustments ca))
-            {
-                colorAdjustments = ca;
-                Debug.Log($"[ScreenFader] ColorAdjustments found. postExposure override: {ca.postExposure.overrideState}");
+                ovrScreenFade.transform.SetParent(mainCam.transform, false);
+                ovrScreenFade.transform.localPosition = Vector3.zero;
+                ovrScreenFade.transform.localRotation = Quaternion.identity;
+                Debug.Log($"[ScreenFader] Fader parented to camera: {mainCam.name}");
             }
             else
             {
-                Debug.LogError("[ScreenFader] Volume Profile must have ColorAdjustments override!");
+                Debug.LogWarning("[ScreenFader] No camera found! Fade will not follow the head.");
             }
+
+            ovrScreenFade.fadeColor = fadeColor;
+            ovrScreenFade.fadeTime = defaultFadeDuration;
         }
 
         private void Update()
         {
-            if (fadeVolume == null || colorAdjustments == null) return;
+            if (ovrScreenFade == null) return;
             
-            float totalFade = ManualFadeValue + TeleportFadeValue + TimedFadeValue;
-            float newWeight = Mathf.Abs(totalFade) > 0.01f ? 1f : 0f;
+            // OVRScreenFade takes the MAX of its internal alphas.
+            // We combine our values and set them explicitly.
+            float totalFade = Mathf.Clamp01(Mathf.Max(ManualFadeValue, TeleportFadeValue, TimedFadeValue));
             
-            if (Mathf.Abs(fadeVolume.weight - newWeight) > 0.01f || Mathf.Abs(colorAdjustments.postExposure.value - totalFade) > 0.1f)
+            // Only update if value changed significantly
+            if (Mathf.Abs(ovrScreenFade.currentAlpha - totalFade) > 0.001f)
             {
-                Debug.Log($"[ScreenFader] Update - totalFade: {totalFade:F2}, weight: {newWeight}, postExposure: {totalFade:F2}");
+                ovrScreenFade.SetExplicitFade(totalFade);
             }
-            
-            fadeVolume.weight = newWeight;
-            colorAdjustments.postExposure.value = totalFade;
         }
 
         #region Async Methods
@@ -69,23 +73,31 @@ namespace App.Demos.TransitionDemo.Scripts
         public async UniTask FadeToBlackAsync(float duration = -1f)
         {
             if (duration < 0) duration = defaultFadeDuration;
-            Debug.Log($"[ScreenFader] FadeToBlackAsync started - duration: {duration}s, target: {fadeToBlackValue}");
-            await FadeManualAsync(fadeToBlackValue, duration);
+            Debug.Log($"[ScreenFader] FadeToBlackAsync started - duration: {duration}s");
+            await FadeManualAsync(1f, duration);
             Debug.Log("[ScreenFader] FadeToBlackAsync completed");
         }
 
         public async UniTask FadeToClearAsync(float duration = -1f)
         {
             if (duration < 0) duration = defaultFadeDuration;
-            Debug.Log($"[ScreenFader] FadeToClearAsync started - duration: {duration}s, target: 0");
+            Debug.Log($"[ScreenFader] FadeToClearAsync started - duration: {duration}s");
             await FadeManualAsync(0f, duration);
             Debug.Log("[ScreenFader] FadeToClearAsync completed");
         }
 
         public async UniTask FadeToWhiteAsync(float duration = -1f)
         {
+            // Note: OVRScreenFade default implementation is usually black-based.
+            // To support white, we'd need to swap fadeColor temporarily.
+            Color originalColor = ovrScreenFade.fadeColor;
+            ovrScreenFade.fadeColor = Color.white;
+            
             if (duration < 0) duration = defaultFadeDuration;
-            await FadeManualAsync(fadeToWhiteValue, duration);
+            await FadeManualAsync(1f, duration);
+            
+            // Keep white until we fade back to clear
+            ovrScreenFade.fadeColor = originalColor;
         }
 
         public async UniTask FadeOutAndInAsync(float fadeOutDuration = -1f, float holdDuration = 0.1f, float fadeInDuration = -1f)
@@ -148,7 +160,7 @@ namespace App.Demos.TransitionDemo.Scripts
         public void SetFadeImmediate(float fadeValue)
         {
             Debug.Log($"[ScreenFader] SetFadeImmediate - value: {fadeValue}");
-            ManualFadeValue = fadeValue;
+            ManualFadeValue = Mathf.Clamp01(Mathf.Abs(fadeValue) > 0.1f ? 1f : 0f);
         }
 
         public void ClearFadeImmediate()
@@ -171,11 +183,11 @@ namespace App.Demos.TransitionDemo.Scripts
             {
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / fadeOutDuration);
-                TeleportFadeValue = Mathf.Lerp(startValue, fadeToBlackValue, t);
+                TeleportFadeValue = Mathf.Lerp(startValue, 1f, t);
                 await UniTask.Yield();
             }
             
-            TeleportFadeValue = fadeToBlackValue;
+            TeleportFadeValue = 1f;
             
             if (holdDuration > 0)
                 await UniTask.WaitForSeconds(holdDuration);
@@ -185,7 +197,7 @@ namespace App.Demos.TransitionDemo.Scripts
             {
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / fadeInDuration);
-                TeleportFadeValue = Mathf.Lerp(fadeToBlackValue, 0f, t);
+                TeleportFadeValue = Mathf.Lerp(1f, 0f, t);
                 await UniTask.Yield();
             }
             

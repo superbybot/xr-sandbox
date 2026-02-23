@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8491813590695316548}
   - component: {fileID: 1997754915069619648}
-  - component: {fileID: 3418443687734861144}
+  - component: {fileID: 8564774060619765046}
   m_Layer: 0
   m_Name: Transition Demo Screen Fade Volume
   m_TagString: Untagged
@@ -45,12 +45,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c890721cc3131844b283a5a2d9f89f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::App.Demos.TransitionDemo.Scripts.ScreenFader
-  fadeVolume: {fileID: 3418443687734861144}
   defaultFadeDuration: 1
-  fadeToBlackValue: -10
-  fadeToWhiteValue: 10
-  enableDebugLogs: 0
---- !u!114 &3418443687734861144
+  fadeColor: {r: 0.01, g: 0.01, b: 0.01, a: 1}
+--- !u!114 &8564774060619765046
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -59,11 +56,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5232793715122965242}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Script: {fileID: 11500000, guid: df8e1d778abf442e4bec449c360e9e1c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
-  m_IsGlobal: 1
-  priority: 100
-  blendDistance: 0
-  weight: 0
-  sharedProfile: {fileID: 11400000, guid: bb06712f6cf463a47bd2a01781a1e719, type: 2}
+  m_EditorClassIdentifier: Oculus.VR::OVRScreenFade
+  fadeTime: 2
+  fadeColor: {r: 0.01, g: 0.01, b: 0.01, a: 1}
+  fadeOnStart: 1
+  renderQueue: 5000

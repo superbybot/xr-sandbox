@@ -88,7 +88,6 @@ namespace App.Demos.DialogueDemo.Scripts
             
             if (!isVisible) return;
             
-            // Smoothly interpolate position and rotation instead of snapping
             transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * positionSmoothSpeed);
             
             Quaternion targetRotation = Quaternion.LookRotation(transform.position - mainCamera.transform.position);

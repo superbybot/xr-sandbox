@@ -1,0 +1,83 @@
+.menu-container {
+    background-color: rgba(15, 35, 55, 0.95); /* High-quality solid deep blue */
+    border-radius: 20px;
+    padding: 30px;
+    width: 512px;
+    border-width: 2px;
+    border-color: rgba(100, 180, 255, 0.3);
+    align-items: stretch;
+}
+
+.title {
+    -unity-font-style: bold;
+    font-size: 24px;
+    color: white;
+    -unity-text-align: middle-center;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+}
+
+.content-spacer {
+    height: 20px;
+}
+
+.control-group {
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.control-label {
+    color: rgba(200, 230, 255, 0.8);
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.value-display {
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: rgb(0, 200, 255);
+    -unity-text-align: middle-center;
+    margin-top: 10px;
+}
+
+.confirm-btn {
+    background-color: rgb(0, 120, 215);
+    color: white;
+    border-radius: 10px;
+    padding: 15px;
+    font-size: 18px;
+    -unity-font-style: bold;
+    border-width: 0;
+    transition-duration: 0.1s;
+}
+
+.confirm-btn:hover {
+    background-color: rgb(0, 150, 255);
+    scale: 1.02;
+}
+
+.confirm-btn:active {
+    background-color: rgb(0, 100, 180);
+    scale: 0.98;
+}
+
+/* UITK Slider Overrides */
+.unity-slider#height-slider {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.unity-slider#height-slider .unity-base-slider__tracker {
+    height: 6px;
+}
+
+.unity-slider#height-slider .unity-base-slider__dragger {
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+}
+
+.unity-slider#height-slider .unity-label {
+    display: none;
+}

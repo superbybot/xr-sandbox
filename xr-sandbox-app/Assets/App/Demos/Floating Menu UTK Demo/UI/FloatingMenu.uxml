@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="UnityEngine.UIElements ../../../../UIElementsSchema/UnityEngine.UIElements.xsd" editor-extension-mode="False">
+    <ui:Style src="FloatingMenu.uss" />
+    <ui:VisualElement name="menu-container" class="menu-container">
+        <ui:Label text="FLOATING MENU" name="title" class="title" />
+        <ui:VisualElement class="content-spacer" />
+        <ui:VisualElement class="control-group">
+            <ui:Label text="Height Adjustment" class="control-label" />
+            <ui:Slider name="height-slider" label="Set Height" low-value="0.5" high-value="2.5" />
+            <ui:Label name="value-label" text="Height: 1.36m" class="value-display" />
+        </ui:VisualElement>
+        <ui:VisualElement class="content-spacer" />
+        <ui:Button text="CONFIRM" name="confirm-button" class="confirm-btn" />
+    </ui:VisualElement>
+</ui:UXML>

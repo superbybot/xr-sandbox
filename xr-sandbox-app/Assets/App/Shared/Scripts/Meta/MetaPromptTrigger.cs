@@ -131,9 +131,16 @@ namespace App.Shared.Scripts.Meta
 
         private bool IsPlayer(Collider collider)
         {
-            // OVRCameraRig parts usually tagged Player or named appropriately
-            return collider.CompareTag("Player") || 
-                   collider.name.Contains("OVR") || 
+            // Generic Check: Look for Player tag or XR Origin / Camera components
+            if (collider.CompareTag("Player")) return true;
+
+            // Check for root
+            var root = collider.transform.root;
+            if (root.GetComponentInChildren<Camera>()) return true;
+            if (root.CompareTag("Player")) return true;
+            
+            // Legacy/Meta fallback names just in case
+            return collider.name.Contains("Body") || 
                    collider.name.Contains("Hand") ||
                    collider.name.Contains("Controller");
         }

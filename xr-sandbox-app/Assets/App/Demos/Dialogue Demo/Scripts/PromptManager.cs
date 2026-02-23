@@ -135,10 +135,7 @@ namespace App.Demos.DialogueDemo.Scripts
                 
                 await defaultPrompt.ShowPromptAsync(promptData.message, promptData.duration);
                 
-                if (promptData.duration.HasValue)
-                {
-                }
-                else
+                if (!promptData.duration.HasValue)
                 {
                     await UniTask.WaitWhile(() => defaultPrompt.IsShowing());
                 }

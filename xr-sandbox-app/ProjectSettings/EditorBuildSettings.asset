@@ -6,8 +6,14 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/App/Demos/Dialogue Demo/Scenes/Dialogue Demo Scene.unity
-    guid: ccaf4aecf6cc74abdb9ab6b6f69cfae9
+    path: Assets/App/Demos/Floating Menu UTK Demo/Scenes/Floating Menu UTK Demo.unity
+    guid: 59ceb85800fe84adca34b0a089edc721
+  - enabled: 1
+    path: Assets/Samples/XR Interaction Toolkit/3.3.1/World Space UI/DemoScene.unity
+    guid: ff0763a18b6d8804894cf3fd83ffa89b
+  - enabled: 1
+    path: Assets/App/Demos/Transition Demo/Scenes/Transition Demo.unity
+    guid: 1a84ffba7bedb16409622eb7dd148924
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: bfa1182bd221b4ca89619141f66f1260, type: 2}
     Unity.XR.WindowsMR.Settings: {fileID: 11400000, guid: dc5a169419fa04987b057f65238cf3ba, type: 2}
@@ -16,6 +22,6 @@ EditorBuildSettings:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 985fdffee33a5944396199c6b7145dd4, type: 3}
     com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: 5dcc2603f77432c4b8f783205c89bc27, type: 2}
-    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 1a4c68ca72a83449f938d669337cb305, type: 2}
-    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: a9a6963505ddf7f4d886008c6dc86122, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 7da43d8ff19a5446db2d439c2b6f356c, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 86f9cf8073ec74963ad07312cf87ca7c, type: 2}
   m_UseUCBPForAssetBundles: 0
