@@ -17,8 +17,8 @@ TagManager:
   - XR - UI Object
   - XR - Physics Object
   - 
-  - 
-  - 
+  - Character
+  - MirroredCharacter
   - 
   - 
   - 
